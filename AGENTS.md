@@ -15,17 +15,20 @@ Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
 ```bash
 npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
 npx expo start              # start the dev server
+npx expo start --clear      # start with a cleared Metro/bundler cache
 npx expo lint               # lint
-npx tsc --noEmit            # typecheck
 npx expo-doctor             # diagnose dependency and config issues
 npx expo install --fix      # fix incompatible package versions
+npx supabase start          # start local Supabase (Docker)
+npx supabase db reset       # reapply migrations on the local database
+npx supabase test db        # run pgTAP tests in supabase/tests
 ```
 
-Run lint and typecheck before declaring any task done.
+Run `npx expo lint`, `npx expo-doctor`, and `npx supabase test db` before declaring any task done.
 
 ## Navigation & Routing
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
+- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.jsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
 - Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
 - Docs: https://docs.expo.dev/router/introduction.md
 
@@ -36,6 +39,11 @@ Docs: https://docs.expo.dev/eas/index.md
 
 ## Rules
 
+- This project uses **JavaScript only** (`.js`/`.jsx`). Do not introduce TypeScript files or type-checking steps.
+- Follow the layering in `docs/context.md` and `docs/sdd.md`: Presentation → AppServices → Repositories → Supabase. Routes and UI components must never import the Supabase client directly.
+- All financial mutations go through the AppServices transaction flow and the PostgreSQL RPCs defined in `docs/backend-contract.md`. Never write balances or transactions directly from UI code.
+- Database changes require reviewed SQL migrations. Never apply a migration or change the database without explicit user approval.
+- Do not run `git commit` or `git push` without explicit user instruction.
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
