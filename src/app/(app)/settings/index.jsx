@@ -1,7 +1,9 @@
 import Constants from 'expo-constants';
-import { useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '@/modules/auth';
+import { CategorySummary, useCategories } from '@/modules/categories';
 import {
   AppButton,
   Card,
@@ -32,8 +34,16 @@ function getDeviceTimezone() {
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
+  const { categories, loading: categoriesLoading, error: categoriesError, refresh: refreshCategories } =
+    useCategories();
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
   const timezone = getDeviceTimezone();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshCategories();
+    }, [refreshCategories])
+  );
 
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -67,6 +77,12 @@ export default function SettingsScreen() {
           size="sm"
           onPress={() => setConfirmVisible(true)}
         />
+      </Card>
+
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Kategori Sistem</Text>
+        <ErrorBanner message={categoriesError} />
+        <CategorySummary categories={categories} loading={categoriesLoading} />
       </Card>
 
       <Card>
