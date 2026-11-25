@@ -1,7 +1,7 @@
 # Rencana Fase Pengerjaan Proyek
 
 **Proyek:** Personal Finance Tracking (Expo SDK 58 + React Native 0.88.1 + Supabase lokal)
-**Status dokumen:** Disetujui — Fase 5 selesai diimplementasikan, menunggu demo manual dan persetujuan Fase 6
+**Status dokumen:** Disetujui — Fase 5 selesai diverifikasi manual dan disetujui; Fase 6 implementasi selesai, menunggu verifikasi manual
 **Dibuat:** 22 November 2026
 
 > Catatan lokasi: dokumentasi proyek berada di `docs/` di root repository, bukan di
@@ -211,7 +211,7 @@ laporan fase disetujui.
 - Perbaikan React key: key dialog/form Pocket dibuat unik per komponen (`item-form-*`, `fund-dialog-*`, `transaction-form-*`, `pocket-form-*`) untuk menghilangkan peringatan duplikat key `.$closed` di halaman detail Pocket.
 - Perbaikan arsip/aktifkan Pocket: `src/app/(app)/pockets/index.jsx` meneruskan `pocket.id` ke `archivePocket`/`unarchivePocket`. Sebelumnya objek Pocket diteruskan sehingga validasi AppService menolaknya dengan `POCKET_NOT_FOUND` ("Pocket tidak ditemukan") sebelum RPC dipanggil.
 - Verifikasi otomatis: lint bersih, 47 tes Jest lolos, 406 tes pgTAP lolos, doctor 20/20, export Android sukses.
-- Belum terverifikasi: matriks manual PCK/TRX terkait Pocket di perangkat dan persetujuan pengguna untuk Fase 6.
+- Verifikasi manual: matriks PCK/TRX terkait Pocket telah dijalankan pengguna di perangkat dan dinyatakan selesai; Fase 5 disetujui.
 
 ---
 
@@ -251,6 +251,24 @@ dibuka, serta kartu notifikasi persisten yang menunggu keputusan pengguna.
 ### Gate keluar
 
 Automation dan Notification end-to-end di perangkat/emulator; laporan fase disetujui.
+
+### Status implementasi
+
+- Repository Automation/Notification dan AppService sudah dibuat; seluruh mutasi memakai RPC yang
+  tersedia di `0011_rpc_automations.sql`, `0013_rpc_schedule.sql`, dan view `v_pending_notifications`.
+- UI Pocket Item dapat membuat Automation (template) untuk Income/Expense; detail Pocket dapat
+  mengubah jadwal/detail dan menghapus Automation. Transfer tidak menampilkan opsi Automation.
+- `AutomationScheduler` memproses jadwal saat aplikasi dibuka dan saat AppState kembali `active`,
+  dengan guard in-flight dan kegagalan yang tidak mengganggu aplikasi.
+- Tab Notifikasi menampilkan badge dari store bersama; kartu persisten dapat dikonfirmasi atau
+  ditolak. Income memakai nominal template dan menampilkan peringatan permanen; Expense dapat
+  menyesuaikan nominal occurrence.
+- Perbaikan UI: `loadingFunds` tidak lagi mengunci tombol dialog Notifikasi; refresh `silent`
+  pada `useFunds` tetap menyelesaikan status loading.
+- Verifikasi otomatis: `npx expo lint` bersih, Jest 62/62, `npx supabase test db` 406/406,
+  `npx expo-doctor` 20/20, dan `npx expo export --platform android` berhasil.
+- Belum terverifikasi: matriks manual AUTO-001–036 dan INT-004 di perangkat serta persetujuan
+  pengguna untuk Fase 7.
 
 ---
 
@@ -313,7 +331,7 @@ Tidak termasuk MVP lokal. Dilaksanakan hanya setelah Fase 7 disetujui.
 ## 10. Urutan gate ringkas
 
 ```text
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 (implementasi ✅, demo manual pending) → Fase 6 → Fase 7 → (Fase 8 opsional)
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 ✅ → Fase 6 (implementasi ✅, verifikasi manual pending) → Fase 7 → (Fase 8 opsional)
 ```
 
 Setiap panah memerlukan persetujuan pengguna sebelum dieksekusi.

@@ -1,5 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { AutomationScheduler } from '@/modules/automation';
+import { useNotifications } from '@/modules/notifications';
 import { colors, typography } from '@/shared/theme';
 
 const TABS = [
@@ -22,6 +24,12 @@ const TABS = [
     iconOutline: 'albums-outline',
   },
   {
+    name: 'notifications',
+    title: 'Notifikasi',
+    icon: 'notifications',
+    iconOutline: 'notifications-outline',
+  },
+  {
     name: 'funds',
     title: 'Fund',
     icon: 'wallet',
@@ -36,39 +44,46 @@ const TABS = [
 ];
 
 export default function AppLayout() {
+  const { notifications } = useNotifications();
+  const badge = notifications.length > 0 ? String(notifications.length) : undefined;
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.tabInactive,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          paddingTop: 4,
-        },
-        tabBarLabelStyle: {
-          ...typography.caption,
-          fontWeight: '600',
-        },
-      }}
-    >
-      {TABS.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons
-                name={focused ? tab.icon : tab.iconOutline}
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      ))}
-    </Tabs>
+    <>
+      <AutomationScheduler />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.tabInactive,
+          tabBarStyle: {
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
+            paddingTop: 4,
+          },
+          tabBarLabelStyle: {
+            ...typography.caption,
+            fontWeight: '600',
+          },
+        }}
+      >
+        {TABS.map((tab) => (
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={{
+              title: tab.title,
+              tabBarBadge: tab.name === 'notifications' ? badge : undefined,
+              tabBarIcon: ({ color, size, focused }) => (
+                <Ionicons
+                  name={focused ? tab.icon : tab.iconOutline}
+                  size={size}
+                  color={color}
+                />
+              ),
+            }}
+          />
+        ))}
+      </Tabs>
+    </>
   );
 }

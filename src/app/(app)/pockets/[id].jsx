@@ -2,6 +2,11 @@ import { useFocusEffect, useLocalSearchParams, router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import {
+  AutomationForm,
+  AutomationSection,
+  useAutomation,
+} from '@/modules/automation';
 import { useFunds } from '@/modules/funds';
 import {
   PocketFundDialog,
@@ -53,24 +58,41 @@ export default function PocketDetailScreen() {
     deletePocketTransaction,
   } = usePockets();
   const { funds, refresh: refreshFunds } = useFunds();
+  const {
+    automations,
+    saving: automationSaving,
+    error: automationError,
+    refresh: refreshAutomations,
+    clearError: clearAutomationError,
+    createAutomation,
+    updateAutomation,
+    deleteAutomation,
+  } = useAutomation();
 
   const [itemFormVisible, setItemFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [fundAction, setFundAction] = useState(null);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [editingAutomation, setEditingAutomation] = useState(null);
+  const [pendingAutomationDelete, setPendingAutomationDelete] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
       refresh();
+      refreshAutomations({ silent: true });
       refreshFunds();
-    }, [refresh, refreshFunds])
+    }, [refresh, refreshAutomations, refreshFunds])
   );
 
   const pocket = getPocket(pocketId);
   const items = itemsByPocket.get(pocketId) ?? [];
   const summary = summaryByPocket.get(pocketId);
+  const pocketAutomations = automations.filter(
+    (automation) => automation.item?.pocketId === pocketId
+  );
   const activeFunds = funds.filter((fund) => fund.fundType === 'active');
+  const busy = saving || automationSaving;
 
   const closeItemForm = () => {
     setItemFormVisible(false);
@@ -79,7 +101,9 @@ export default function PocketDetailScreen() {
 
   const handleItemSubmit = async (input) => {
     let success = false;
-    if (editingItem) {
+    if (input.automation) {
+      success = await createAutomation({ pocketId, ...input.automation });
+    } else if (editingItem) {
       success = await updatePlannedExpenseItem(input);
     } else if (pocket.type === 'income') {
       success = await createIncomeItem(input);
@@ -91,6 +115,23 @@ export default function PocketDetailScreen() {
 
     if (success) {
       closeItemForm();
+    }
+  };
+
+  const handleAutomationSubmit = async (input) => {
+    const success = await updateAutomation(input);
+    if (success) {
+      setEditingAutomation(null);
+    }
+  };
+
+  const handleAutomationDelete = async () => {
+    if (!pendingAutomationDelete) {
+      return;
+    }
+    const success = await deleteAutomation(pendingAutomationDelete.id);
+    if (success) {
+      setPendingAutomationDelete(null);
     }
   };
 
@@ -152,7 +193,14 @@ export default function PocketDetailScreen() {
   return (
     <Screen
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={() => refresh({ silent: true })} />
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={() => {
+            refresh({ silent: true });
+            refreshAutomations({ silent: true });
+            refreshFunds({ silent: true });
+          }}
+        />
       }
     >
       <Pressable
@@ -179,14 +227,20 @@ export default function PocketDetailScreen() {
                 setEditingItem(null);
                 setItemFormVisible(true);
               }}
-              disabled={saving}
+              disabled={busy}
               style={styles.headerButton}
             />
           ) : null
         }
       />
 
-      <ErrorBanner message={error} onDismiss={clearError} />
+      <ErrorBanner
+        message={error ?? automationError}
+        onDismiss={() => {
+          clearError();
+          clearAutomationError();
+        }}
+      />
 
       <Card style={styles.infoCard}>
         <Text style={styles.infoLabel}>Tipe Pocket</Text>
@@ -204,6 +258,13 @@ export default function PocketDetailScreen() {
           </Text>
         ) : null}
       </Card>
+
+      <AutomationSection
+        automations={pocketAutomations}
+        busy={busy}
+        onEdit={(automation) => setEditingAutomation(automation)}
+        onDelete={(automation) => setPendingAutomationDelete(automation)}
+      />
 
       <Text style={styles.sectionTitle}>Item Pocket</Text>
 
@@ -238,7 +299,7 @@ export default function PocketDetailScreen() {
                     setEditingItem(null);
                     setItemFormVisible(true);
                   }}
-                  disabled={saving}
+                  disabled={busy}
                 />
               ) : null
             }
@@ -252,9 +313,20 @@ export default function PocketDetailScreen() {
         pocket={pocket}
         item={editingItem}
         funds={funds}
-        saving={saving}
+        saving={busy}
         onSubmit={handleItemSubmit}
         onCancel={closeItemForm}
+      />
+
+      <AutomationForm
+        key={editingAutomation ? `automation-form-${editingAutomation.id}-open` : 'automation-form-closed'}
+        visible={Boolean(editingAutomation)}
+        automation={editingAutomation}
+        pocketType={pocket.type}
+        funds={funds}
+        saving={busy}
+        onSubmit={handleAutomationSubmit}
+        onCancel={() => !busy && setEditingAutomation(null)}
       />
 
       <PocketFundDialog
@@ -268,9 +340,9 @@ export default function PocketDetailScreen() {
         }
         funds={fundAction?.mode === 'confirm' ? funds : activeFunds}
         confirmLabel={fundAction?.mode === 'confirm' ? 'Konfirmasi' : 'Konversi'}
-        saving={saving}
+        saving={busy}
         onSubmit={handleFundAction}
-        onCancel={() => !saving && setFundAction(null)}
+        onCancel={() => !busy && setFundAction(null)}
       />
 
       <PocketTransactionForm
@@ -282,9 +354,20 @@ export default function PocketDetailScreen() {
             editingTransaction?.transaction?.type === 'expense'
         )}
         funds={funds}
-        saving={saving}
+        saving={busy}
         onSubmit={handleTransactionSubmit}
-        onCancel={() => !saving && setEditingTransaction(null)}
+        onCancel={() => !busy && setEditingTransaction(null)}
+      />
+
+      <ConfirmDialog
+        visible={Boolean(pendingAutomationDelete)}
+        title="Hapus Automation?"
+        message="Template, occurrence, dan Notification pending akan dihapus. Transaksi yang sudah dikonfirmasi tetap dipertahankan."
+        confirmLabel="Hapus"
+        destructive
+        loading={busy}
+        onConfirm={handleAutomationDelete}
+        onCancel={() => !busy && setPendingAutomationDelete(null)}
       />
 
       <ConfirmDialog
@@ -297,9 +380,9 @@ export default function PocketDetailScreen() {
         }
         confirmLabel="Hapus"
         destructive
-        loading={saving}
+        loading={busy}
         onConfirm={handleDelete}
-        onCancel={() => !saving && setPendingDelete(null)}
+        onCancel={() => !busy && setPendingDelete(null)}
       />
     </Screen>
   );

@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { AutomationFields } from '@/modules/automation';
 import {
   AmountInput,
   AppButton,
@@ -36,6 +37,11 @@ export default function PocketItemForm({
 }) {
   const isEditing = Boolean(item);
   const isTransfer = pocket?.type === 'transfer';
+  const canAutomate = !isEditing && !isTransfer;
+  const [automationEnabled, setAutomationEnabled] = useState(false);
+  const [automationFundId, setAutomationFundId] = useState('');
+  const [frequency, setFrequency] = useState('weekly');
+  const [startDate, setStartDate] = useState(new Date());
   const [name, setName] = useState(item?.name ?? '');
   const [amount, setAmount] = useState(item?.amount ?? 0);
   const [sourceFundId, setSourceFundId] = useState(
@@ -65,6 +71,18 @@ export default function PocketItemForm({
     }
     if (Number(amount) <= 0) {
       nextErrors.amount = 'Nominal harus lebih besar dari nol.';
+    }
+
+    if (automationEnabled) {
+      if (!automationFundId) {
+        nextErrors.fundId = 'Fund default wajib dipilih.';
+      }
+      if (!frequency) {
+        nextErrors.frequency = 'Frekuensi wajib dipilih.';
+      }
+      if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
+        nextErrors.startDate = 'Tanggal mulai tidak valid.';
+      }
     }
 
     if (isTransfer) {
@@ -97,6 +115,15 @@ export default function PocketItemForm({
       payload.sourceFundId = sourceFundId;
       payload.destinationFundId = destinationFundId;
       payload.date = date;
+    }
+    if (automationEnabled) {
+      payload.automation = {
+        name: payload.name,
+        amount: payload.amount,
+        fundId: automationFundId,
+        frequency,
+        startDate,
+      };
     }
 
     onSubmit?.(payload);
@@ -136,6 +163,42 @@ export default function PocketItemForm({
             required
           />
           <AmountInput value={amount} onChangeValue={setAmount} error={errors.amount} required />
+
+          {canAutomate ? (
+            <>
+              <View style={styles.automationToggle}>
+                <View style={styles.automationToggleText}>
+                  <Text style={styles.automationTitle}>Jadikan Automation</Text>
+                  <Text style={styles.automationHint}>
+                    Item menjadi template dan jadwal dibuat otomatis.
+                  </Text>
+                </View>
+                <Switch
+                  value={automationEnabled}
+                  onValueChange={setAutomationEnabled}
+                  disabled={saving}
+                  trackColor={{ false: colors.borderStrong, true: colors.primary }}
+                  thumbColor={colors.surface}
+                  accessibilityLabel="Jadikan Automation"
+                />
+              </View>
+
+              {automationEnabled ? (
+                <AutomationFields
+                  funds={funds}
+                  pocketType={pocket?.type}
+                  fundId={automationFundId}
+                  onFundIdChange={setAutomationFundId}
+                  frequency={frequency}
+                  onFrequencyChange={setFrequency}
+                  startDate={startDate}
+                  onStartDateChange={setStartDate}
+                  errors={errors}
+                  disabled={saving}
+                />
+              ) : null}
+            </>
+          ) : null}
 
           {isTransfer ? (
             <>
@@ -212,6 +275,28 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: spacing.xxxl,
+  },
+  automationToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.surfaceAccent,
+    borderRadius: radius.md,
+  },
+  automationToggleText: {
+    flex: 1,
+    paddingRight: spacing.md,
+  },
+  automationTitle: {
+    ...typography.bodyStrong,
+    color: colors.text,
+  },
+  automationHint: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginTop: spacing.xxs,
   },
   actions: {
     flexDirection: 'row',

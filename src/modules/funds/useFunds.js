@@ -26,9 +26,9 @@ export function useFunds() {
       setError(toAppError(loadError).message);
       return [];
     } finally {
-      if (!silent) {
-        setLoading(false);
-      }
+      // `silent` hanya meniadakan indikator awal; status loading tetap harus
+      // selesai agar pemanggil tidak mengira data masih dimuat selamanya.
+      setLoading(false);
     }
   }, []);
 
