@@ -79,7 +79,7 @@ export default function FundForm({
       animationType="slide"
       onRequestClose={() => !saving && onCancel?.()}
     >
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>{isEditing ? 'Ubah Fund' : 'Fund Baru'}</Text>
           <Pressable
@@ -106,6 +106,7 @@ export default function FundForm({
             error={errors.name}
             required
             autoCorrect={false}
+            returnKeyType="done"
           />
 
           <SelectField

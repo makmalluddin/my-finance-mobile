@@ -89,8 +89,10 @@ export default function SelectField({
             accessibilityRole="button"
             accessibilityLabel="Tutup pilihan"
           />
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>{label || 'Pilih'}</Text>
+          <View style={styles.sheet} accessibilityViewIsModal>
+            <Text style={styles.sheetTitle} accessibilityRole="header">
+              {label || 'Pilih'}
+            </Text>
             <ScrollView style={styles.optionList} keyboardShouldPersistTaps="handled">
               {options.length === 0 ? (
                 <Text style={styles.emptyText}>Belum ada pilihan.</Text>
@@ -103,6 +105,11 @@ export default function SelectField({
                       onPress={() => handleSelect(option)}
                       disabled={option.disabled}
                       accessibilityRole="button"
+                      accessibilityLabel={
+                        option.description
+                          ? `${option.label}, ${option.description}`
+                          : option.label
+                      }
                       accessibilityState={{
                         selected: isSelected,
                         disabled: option.disabled,

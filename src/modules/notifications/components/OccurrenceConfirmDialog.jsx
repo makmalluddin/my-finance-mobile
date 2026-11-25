@@ -3,7 +3,7 @@ import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { AmountInput, AppButton, SelectField } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
-import { formatDate } from '@/shared/utils/date';
+import { formatDateInTimeZone } from '@/shared/utils/date';
 import { formatRupiah } from '@/shared/utils/currency';
 
 /**
@@ -14,6 +14,7 @@ import { formatRupiah } from '@/shared/utils/currency';
 export default function OccurrenceConfirmDialog({
   visible,
   notification,
+  timezone = null,
   funds = [],
   saving = false,
   fundsLoading = false,
@@ -50,12 +51,18 @@ export default function OccurrenceConfirmDialog({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={() => !saving && onCancel?.()}>
       <View style={styles.backdrop}>
-        <View style={styles.dialog}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.dialog} accessibilityViewIsModal>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             <Text style={styles.title}>{isIncome ? 'Konfirmasi Income' : 'Konfirmasi Expense'}</Text>
             <Text style={styles.message}>
               {notification?.itemName ?? ''} · {notification?.pocketName ?? ''}
-              {'\n'}Jadwal {notification?.scheduledFor ? formatDate(new Date(notification.scheduledFor)) : '-'}
+              {'\n'}Jadwal{' '}
+              {notification?.scheduledFor
+                ? formatDateInTimeZone(notification.scheduledFor, timezone)
+                : '-'}
             </Text>
             <Text style={styles.amount}>
               Nominal template {formatRupiah(notification?.templateAmount ?? 0)}

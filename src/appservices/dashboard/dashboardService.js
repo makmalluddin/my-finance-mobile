@@ -1,18 +1,10 @@
 import { dashboardRepository } from '@/data/repositories/dashboardRepository';
-import { toDateKey } from '@/shared/utils/date';
+import { getDeviceTimezone, toDateKey } from '@/shared/utils/date';
 
 /**
  * Dashboard bersifat read-only. Tanggal dan timezone perangkat dikirim ke RPC
  * agar agregasi tujuh hari memakai batas hari lokal yang sama dengan UI.
  */
-export function getDeviceTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
-
 export const dashboardService = {
   getDashboard({ today, timezone } = {}) {
     return dashboardRepository.getDashboard({

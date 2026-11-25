@@ -9,6 +9,7 @@ import {
 } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
+import { fromDateKey, occurredAtToDateKey } from '@/shared/utils/date';
 
 function fundOptions(funds) {
   return funds
@@ -34,9 +35,10 @@ export default function PocketTransactionForm({
   onCancel,
 }) {
   const [amount, setAmount] = useState(transaction?.amount ?? 0);
-  const [date, setDate] = useState(
-    transaction?.occurredAt ? new Date(transaction.occurredAt) : new Date()
-  );
+  const [date, setDate] = useState(() => {
+    const key = occurredAtToDateKey(transaction?.occurredAt);
+    return (key ? fromDateKey(key) : null) ?? new Date();
+  });
   const [sourceFundId, setSourceFundId] = useState(transaction?.sourceFundId ?? '');
   const [destinationFundId, setDestinationFundId] = useState(
     transaction?.destinationFundId ?? ''
@@ -94,7 +96,7 @@ export default function PocketTransactionForm({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !saving && onCancel?.()}>
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>Ubah Transaksi Pocket</Text>
           <Pressable
@@ -108,7 +110,11 @@ export default function PocketTransactionForm({
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <AmountInput
             value={amount}
             onChangeValue={setAmount}

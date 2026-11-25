@@ -57,7 +57,12 @@ export default function PocketDetailScreen() {
     updatePocketTransaction,
     deletePocketTransaction,
   } = usePockets();
-  const { funds, refresh: refreshFunds } = useFunds();
+  const {
+    funds,
+    error: fundsError,
+    clearError: clearFundsError,
+    refresh: refreshFunds,
+  } = useFunds();
   const {
     automations,
     saving: automationSaving,
@@ -234,13 +239,9 @@ export default function PocketDetailScreen() {
         }
       />
 
-      <ErrorBanner
-        message={error ?? automationError}
-        onDismiss={() => {
-          clearError();
-          clearAutomationError();
-        }}
-      />
+      <ErrorBanner message={error} onDismiss={clearError} />
+      <ErrorBanner message={automationError} onDismiss={clearAutomationError} />
+      <ErrorBanner message={fundsError} onDismiss={clearFundsError} />
 
       <Card style={styles.infoCard}>
         <Text style={styles.infoLabel}>Tipe Pocket</Text>

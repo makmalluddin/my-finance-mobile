@@ -40,7 +40,7 @@ export default function PocketForm({ visible, pocket = null, saving = false, onS
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !saving && onCancel?.()}>
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>{isEditing ? 'Ubah Pocket' : 'Pocket Baru'}</Text>
           <Pressable
@@ -54,12 +54,19 @@ export default function PocketForm({ visible, pocket = null, saving = false, onS
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <TextField
             label="Nama Pocket"
             value={name}
             onChangeText={setName}
             placeholder="Misalnya: Liburan, Dapur, Tabungan"
+            autoCorrect={false}
+            returnKeyType="next"
+            blurOnSubmit={false}
             error={errors.name}
             required
           />
@@ -69,6 +76,8 @@ export default function PocketForm({ visible, pocket = null, saving = false, onS
             onChangeText={setDescription}
             placeholder="Opsional"
             multiline
+            autoCapitalize="sentences"
+            returnKeyType="done"
           />
           <SelectField
             label="Tipe"

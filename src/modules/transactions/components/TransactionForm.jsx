@@ -16,6 +16,7 @@ import {
 } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
+import { fromDateKey, occurredAtToDateKey } from '@/shared/utils/date';
 
 const TYPE_OPTIONS = [
   { label: 'Income', value: 'income', description: 'Uang masuk ke sebuah Fund.' },
@@ -39,9 +40,10 @@ export default function TransactionForm({
   const isEditing = Boolean(transaction);
   const [type, setType] = useState(transaction?.type ?? 'income');
   const [amount, setAmount] = useState(transaction?.amount ?? 0);
-  const [date, setDate] = useState(
-    transaction?.occurredAt ? new Date(transaction.occurredAt) : new Date()
-  );
+  const [date, setDate] = useState(() => {
+    const key = occurredAtToDateKey(transaction?.occurredAt);
+    return (key ? fromDateKey(key) : null) ?? new Date();
+  });
   const [sourceFundId, setSourceFundId] = useState(transaction?.sourceFundId ?? '');
   const [destinationFundId, setDestinationFundId] = useState(
     transaction?.destinationFundId ?? ''
@@ -131,7 +133,7 @@ export default function TransactionForm({
       animationType="slide"
       onRequestClose={() => !saving && onCancel?.()}
     >
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>
             {isEditing ? 'Ubah Transaksi' : 'Transaksi Baru'}

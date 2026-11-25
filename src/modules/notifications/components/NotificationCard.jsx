@@ -2,11 +2,17 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { AppButton, Card } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
-import { formatDate } from '@/shared/utils/date';
+import { formatDateInTimeZone } from '@/shared/utils/date';
 import { formatRupiah } from '@/shared/utils/currency';
 
 /** Kartu notifikasi pending. Kartu persist di database sampai Confirm/Reject. */
-export default function NotificationCard({ notification, busy = false, onConfirm, onReject }) {
+export default function NotificationCard({
+  notification,
+  timezone = null,
+  busy = false,
+  onConfirm,
+  onReject,
+}) {
   const isIncome = notification.pocketType === 'income';
 
   return (
@@ -16,6 +22,7 @@ export default function NotificationCard({ notification, busy = false, onConfirm
         disabled={busy}
         accessibilityRole="button"
         accessibilityLabel={`Buka konfirmasi ${notification.itemName}`}
+        accessibilityState={{ disabled: busy }}
         style={({ pressed }) => [pressed && styles.pressed]}
       >
         <View style={styles.row}>
@@ -40,7 +47,9 @@ export default function NotificationCard({ notification, busy = false, onConfirm
             </Text>
             <Text style={styles.subtitle}>
               Jadwal{' '}
-              {notification.scheduledFor ? formatDate(new Date(notification.scheduledFor)) : '-'}
+              {notification.scheduledFor
+                ? formatDateInTimeZone(notification.scheduledFor, timezone)
+                : '-'}
             </Text>
           </View>
           <Text style={styles.amount}>{formatRupiah(notification.templateAmount)}</Text>

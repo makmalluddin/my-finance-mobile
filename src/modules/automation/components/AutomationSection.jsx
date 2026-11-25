@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { AppButton, Card } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
-import { formatDate } from '@/shared/utils/date';
+import { formatDate, formatDateInTimeZone, fromDateKey } from '@/shared/utils/date';
 import { formatRupiah } from '@/shared/utils/currency';
 import { FREQUENCY_OPTIONS } from './AutomationFields';
 
@@ -27,9 +27,12 @@ export default function AutomationSection({ automations = [], busy = false, onEd
             {formatRupiah(automation.item?.amount ?? 0)} · {frequencyLabel(automation.frequency)}
           </Text>
           <Text style={styles.detail}>
-            Mulai {automation.startDate ? formatDate(new Date(`${automation.startDate}T00:00:00`)) : '-'}
+            Mulai{' '}
+            {automation.startDate ? formatDate(fromDateKey(automation.startDate) ?? automation.startDate) : '-'}
             {' · '}Berikutnya{' '}
-            {automation.nextRunAt ? formatDate(new Date(automation.nextRunAt)) : '-'}
+            {automation.nextRunAt
+              ? formatDateInTimeZone(automation.nextRunAt, automation.timezone)
+              : '-'}
           </Text>
           <View style={styles.actions}>
             <AppButton

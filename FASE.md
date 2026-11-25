@@ -1,7 +1,7 @@
 # Rencana Fase Pengerjaan Proyek
 
 **Proyek:** Personal Finance Tracking (Expo SDK 58 + React Native 0.88.1 + Supabase lokal)
-**Status dokumen:** Disetujui — Fase 5 selesai diverifikasi manual dan disetujui; Fase 6 implementasi selesai, menunggu verifikasi manual
+**Status dokumen:** Disetujui — Fase 6 selesai diverifikasi manual dan disetujui; Fase 7 finalisasi sedang dikerjakan
 **Dibuat:** 22 November 2026
 
 > Catatan lokasi: dokumentasi proyek berada di `docs/` di root repository, bukan di
@@ -267,8 +267,10 @@ Automation dan Notification end-to-end di perangkat/emulator; laporan fase diset
   pada `useFunds` tetap menyelesaikan status loading.
 - Verifikasi otomatis: `npx expo lint` bersih, Jest 62/62, `npx supabase test db` 406/406,
   `npx expo-doctor` 20/20, dan `npx expo export --platform android` berhasil.
-- Belum terverifikasi: matriks manual AUTO-001–036 dan INT-004 di perangkat serta persetujuan
-  pengguna untuk Fase 7.
+- Verifikasi manual AUTO-001–036, INT-004, dan tunggakan Fase 5 (TRX-024, TRX-030, TRX-041,
+  TRX-044, DASH-003) dinyatakan berhasil oleh pengguna; Fase 7 disetujui untuk dieksekusi.
+- Known issue yang disetujui: label "Berikutnya" pada kartu Automation masih menampilkan
+  tanggal mulai sebelum scheduler berjalan. Occurrence dan notifikasi tetap mengikuti frekuensi.
 
 ---
 
@@ -295,6 +297,32 @@ build tanpa menyentuh production/cloud.
 - Tidak ada jalur UI yang menulis ke Supabase secara langsung atau mengubah saldo Fund
   di luar RPC.
 - Risiko residual terdokumentasi.
+
+### Status implementasi
+
+- Audit arsitektur: seluruh akses Supabase hanya di `src/data/repositories`; semua mutasi tetap
+  lewat RPC. Tidak ada penulisan saldo/transaksi langsung dari UI.
+- Error handling: error Fund/Category kini ditampilkan dengan `ErrorBanner` terpisah pada layar
+  Transaksi, Notifikasi, detail Pocket, dan Pengaturan; error Automation tidak lagi ditutupi error Pocket.
+- Timezone: helper bersama `getDeviceTimezone` dan `formatDateInTimeZone` ditambahkan di
+  `src/shared/utils/date.js`. Tanggal jadwal Notifikasi dan Automation memakai zona waktu yang
+  tersimpan; form edit transaksi memakai `occurredAtToDateKey`/`fromDateKey`. Tes round-trip
+  `occurred_at` ditambahkan.
+- Keyboard & aksesibilitas: `keyboardShouldPersistTaps` pada modal form, fokus Email → Kata sandi
+  dengan `KeyboardAvoidingView`, label/state aksesibilitas pada input, kartu, switch, opsi SelectField,
+  dan grafik Expense.
+- Verifikasi otomatis: `npx expo lint` bersih, Jest 69/69, `npx supabase test db` 406/406,
+  `npx expo-doctor` 20/20, dan `npx expo export --platform android` berhasil.
+- Belum dieksekusi: perubahan status dokumen menjadi Accepted, konfigurasi EAS development,
+  dan build cloud — menunggu regresi manual penuh dan persetujuan pengguna.
+
+### Risiko residual
+
+- Label "Berikutnya" pada kartu Automation masih menampilkan tanggal mulai sebelum scheduler
+  berjalan (disetujui apa adanya pada Fase 6).
+- Perangkat fisik bergantung pada IP LAN host di `.env`; `127.0.0.1` hanya untuk laptop.
+- INT-003/INT-004 konkurensi nyata hanya dapat diverifikasi manual dengan dua klien.
+- Cloud build, submit, dan EAS Update belum dilakukan.
 
 ### Gate keluar
 

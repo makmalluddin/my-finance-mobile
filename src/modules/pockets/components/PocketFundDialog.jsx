@@ -41,8 +41,8 @@ export default function PocketFundDialog({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={() => !saving && onCancel?.()}>
       <View style={styles.backdrop}>
-        <View style={styles.dialog}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.dialog} accessibilityViewIsModal>
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             <Text style={styles.title}>{title}</Text>
             {message ? <Text style={styles.message}>{message}</Text> : null}
             <SelectField

@@ -11,6 +11,7 @@ import {
 } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
+import { fromDateKey, occurredAtToDateKey } from '@/shared/utils/date';
 
 function fundOptions(funds) {
   return funds
@@ -50,9 +51,10 @@ export default function PocketItemForm({
   const [destinationFundId, setDestinationFundId] = useState(
     item?.transaction?.destinationFundId ?? ''
   );
-  const [date, setDate] = useState(
-    item?.transaction?.occurredAt ? new Date(item.transaction.occurredAt) : new Date()
-  );
+  const [date, setDate] = useState(() => {
+    const key = occurredAtToDateKey(item?.transaction?.occurredAt);
+    return (key ? fromDateKey(key) : null) ?? new Date();
+  });
   const [errors, setErrors] = useState({});
 
   const options = fundOptions(funds);
@@ -139,7 +141,7 @@ export default function PocketItemForm({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !saving && onCancel?.()}>
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
           <Pressable
@@ -153,12 +155,18 @@ export default function PocketItemForm({
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <TextField
             label="Nama Item"
             value={name}
             onChangeText={setName}
             placeholder="Misalnya: Tiket pesawat"
+            autoCorrect={false}
+            returnKeyType="done"
             error={errors.name}
             required
           />
@@ -179,7 +187,12 @@ export default function PocketItemForm({
                   disabled={saving}
                   trackColor={{ false: colors.borderStrong, true: colors.primary }}
                   thumbColor={colors.surface}
+                  accessibilityRole="switch"
                   accessibilityLabel="Jadikan Automation"
+                  accessibilityState={{
+                    checked: automationEnabled,
+                    disabled: saving,
+                  }}
                 />
               </View>
 

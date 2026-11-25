@@ -50,8 +50,19 @@ export default function TransactionsScreen() {
     updateTransaction,
     deleteTransaction,
   } = useTransactions();
-  const { funds, loading: fundsLoading, refresh: refreshFunds } = useFunds();
-  const { categories, refresh: refreshCategories } = useCategories();
+  const {
+    funds,
+    loading: fundsLoading,
+    error: fundsError,
+    clearError: clearFundsError,
+    refresh: refreshFunds,
+  } = useFunds();
+  const {
+    categories,
+    error: categoriesError,
+    clearError: clearCategoriesError,
+    refresh: refreshCategories,
+  } = useCategories();
 
   const [formVisible, setFormVisible] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -113,6 +124,8 @@ export default function TransactionsScreen() {
       />
 
       <ErrorBanner message={error} onDismiss={clearError} />
+      <ErrorBanner message={fundsError} onDismiss={clearFundsError} />
+      <ErrorBanner message={categoriesError} onDismiss={clearCategoriesError} />
 
       <Card style={styles.filterCard}>
         <SelectField

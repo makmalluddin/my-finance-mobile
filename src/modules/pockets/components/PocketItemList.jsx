@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
-import { formatDate } from '@/shared/utils/date';
+import { formatDate, occurredAtToDateKey } from '@/shared/utils/date';
 
 const STATUS_META = {
   pending: { label: 'Menunggu konfirmasi', color: colors.warning },
@@ -55,7 +55,8 @@ function ItemRow({ item, funds, busy, actions }) {
               {transactionSummary(transaction, funds)}
             </Text>
             <Text style={styles.meta}>
-              {formatDate(new Date(transaction.occurredAt))} · {formatRupiah(amount)}
+              {formatDate(occurredAtToDateKey(transaction.occurredAt) ?? transaction.occurredAt)} ·{' '}
+              {formatRupiah(amount)}
             </Text>
           </>
         ) : null}

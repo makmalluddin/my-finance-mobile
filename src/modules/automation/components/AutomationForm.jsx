@@ -4,7 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { AmountInput, AppButton, TextField } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { getDeviceTimezone } from '@/appservices/automation/automationService';
-import { toDateKey } from '@/shared/utils/date';
+import { fromDateKey, toDateKey } from '@/shared/utils/date';
 import AutomationFields from './AutomationFields';
 
 /**
@@ -25,8 +25,8 @@ export default function AutomationForm({
   const [fundId, setFundId] = useState(automation?.item?.fundId ?? '');
   const [frequency, setFrequency] = useState(automation?.frequency ?? 'weekly');
   const [startDate, setStartDate] = useState(() => {
-    const parsed = automation?.startDate ? new Date(`${automation.startDate}T00:00:00`) : new Date();
-    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+    const parsed = automation?.startDate ? fromDateKey(automation.startDate) : new Date();
+    return parsed && !Number.isNaN(parsed.getTime()) ? parsed : new Date();
   });
   const [errors, setErrors] = useState({});
 
@@ -63,7 +63,7 @@ export default function AutomationForm({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => !saving && onCancel?.()}>
-      <View style={styles.container}>
+      <View style={styles.container} accessibilityViewIsModal>
         <View style={styles.header}>
           <Text style={styles.title}>Ubah Automation</Text>
           <Pressable
@@ -77,11 +77,17 @@ export default function AutomationForm({
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <TextField
             label="Nama Item"
             value={name}
             onChangeText={setName}
+            autoCorrect={false}
+            returnKeyType="done"
             error={errors.name}
             required
           />

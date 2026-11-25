@@ -1,5 +1,5 @@
 import { automationRepository } from '@/data/repositories/automationRepository';
-import { addDays, fromDateKey, toDateKey } from '@/shared/utils/date';
+import { addDays, fromDateKey, getDeviceTimezone, toDateKey } from '@/shared/utils/date';
 import { AppError, getErrorMessage } from '@/shared/utils/errors';
 
 export const AUTOMATION_FREQUENCIES = new Set(['weekly', 'every_two_weeks', 'monthly']);
@@ -63,13 +63,7 @@ function validateTimezone(value) {
 }
 
 /** Zona waktu perangkat saat Automation dibuat. Perubahan berikutnya tidak otomatis mengubah template. */
-export function getDeviceTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
+export { getDeviceTimezone };
 
 function daysBetweenLocalDates(from, to) {
   const fromUtc = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());

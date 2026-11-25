@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
 
@@ -6,7 +6,7 @@ import { colors, radius, spacing, typography } from '../theme';
  * Input teks dengan label, pesan bantuan, dan pesan error.
  * Mendukung `prefix` (misalnya "Rp") dan `suffix` (misalnya "hari").
  */
-export default function TextField({
+const TextField = forwardRef(function TextField({
   label,
   value,
   onChangeText,
@@ -23,7 +23,7 @@ export default function TextField({
   onFocus,
   onBlur,
   ...rest
-}) {
+}, ref) {
   const [focused, setFocused] = useState(false);
   const hasError = Boolean(error);
 
@@ -47,12 +47,18 @@ export default function TextField({
       >
         {prefix ? <Text style={styles.affix}>{prefix}</Text> : null}
         <TextInput
+          ref={ref}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={colors.textSubtle}
           editable={editable}
           multiline={multiline}
+          accessibilityLabel={label}
+          accessibilityHint={helperText}
+          accessibilityState={{ disabled: !editable }}
+          returnKeyType={multiline ? 'default' : 'done'}
+          blurOnSubmit={!multiline}
           style={[styles.input, multiline && styles.inputMultiline, inputStyle]}
           onFocus={(event) => {
             setFocused(true);
@@ -68,13 +74,21 @@ export default function TextField({
       </View>
 
       {hasError ? (
-        <Text style={styles.errorText}>{error}</Text>
+        <Text
+          style={styles.errorText}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {error}
+        </Text>
       ) : helperText ? (
         <Text style={styles.helperText}>{helperText}</Text>
       ) : null}
     </View>
   );
-}
+});
+
+export default TextField;
 
 const styles = StyleSheet.create({
   container: {

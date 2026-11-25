@@ -13,6 +13,7 @@ import {
   Screen,
 } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
+import { getDeviceTimezone } from '@/shared/utils/date';
 import { toAppError } from '@/shared/utils/errors';
 
 function InfoRow({ label, value, last = false }) {
@@ -24,18 +25,15 @@ function InfoRow({ label, value, last = false }) {
   );
 }
 
-function getDeviceTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Waktu perangkat';
-  } catch {
-    return 'Waktu perangkat';
-  }
-}
-
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
-  const { categories, loading: categoriesLoading, error: categoriesError, refresh: refreshCategories } =
-    useCategories();
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError,
+    clearError: clearCategoriesError,
+    refresh: refreshCategories,
+  } = useCategories();
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
   const timezone = getDeviceTimezone();
 
@@ -81,7 +79,7 @@ export default function SettingsScreen() {
 
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>Kategori Sistem</Text>
-        <ErrorBanner message={categoriesError} />
+        <ErrorBanner message={categoriesError} onDismiss={clearCategoriesError} />
         <CategorySummary categories={categories} loading={categoriesLoading} />
       </Card>
 

@@ -34,6 +34,15 @@ function pad2(value) {
   return String(value).padStart(2, '0');
 }
 
+/** Zona waktu perangkat dengan fallback UTC bila tidak tersedia. */
+export function getDeviceTimezone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
 /**
  * Mengembalikan `Date` pada pukul 00.00 waktu lokal.
  * Menerima `Date` atau `"YYYY-MM-DD"`.
@@ -120,6 +129,33 @@ export function occurredAtToDateKey(occurredAt) {
 export function formatDate(value) {
   const date = coerceDate(value);
   return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+/**
+ * Format timestamp ISO pada zona waktu tertentu, misalnya zona waktu yang
+ * tersimpan pada Automation. Menghindari pergeseran tanggal ketika perangkat
+ * berpindah zona waktu.
+ */
+export function formatDateInTimeZone(value, timezone) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+  if (!timezone) {
+    return formatDate(date);
+  }
+  try {
+    const parts = new Intl.DateTimeFormat('id-ID', {
+      timeZone: timezone,
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).formatToParts(date);
+    const part = (type) => parts.find((item) => item.type === type)?.value ?? '';
+    return `${Number(part('day'))} ${part('month')} ${part('year')}`;
+  } catch {
+    return formatDate(date);
+  }
 }
 
 /**

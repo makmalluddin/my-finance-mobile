@@ -29,6 +29,8 @@ export default function AmountInput({
       onChangeText={handleChangeText}
       keyboardType="number-pad"
       inputMode="numeric"
+      returnKeyType="done"
+      blurOnSubmit
       prefix="Rp"
       placeholder="0"
       maxLength={20}

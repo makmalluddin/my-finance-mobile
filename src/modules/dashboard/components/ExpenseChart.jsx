@@ -31,14 +31,16 @@ export default function ExpenseChart({ series = [] }) {
           const date = fromDateKey(point.date);
 
           return (
-            <View key={point.date} style={styles.column} accessible>
+            <View
+              key={point.date}
+              style={styles.column}
+              accessible
+              accessibilityLabel={`${
+                date ? formatDate(date) : point.date
+              }: ${formatRupiah(value)}`}
+            >
               <View style={styles.track}>
-                <View
-                  style={[styles.bar, { height, backgroundColor: colors.primary }]}
-                  accessibilityLabel={`${
-                    date ? formatDate(date) : point.date
-                  }: ${formatRupiah(value)}`}
-                />
+                <View style={[styles.bar, { height, backgroundColor: colors.primary }]} />
               </View>
               <Text style={styles.label} numberOfLines={1}>
                 {shortLabel(point.date)}
