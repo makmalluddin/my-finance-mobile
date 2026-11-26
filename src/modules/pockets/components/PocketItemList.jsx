@@ -1,137 +1,133 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { AppButton } from '@/shared/components';
-import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppButton, Badge, Card } from '@/shared/components';
+import { colors, radius, spacing, shadows, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 import { formatDate, occurredAtToDateKey } from '@/shared/utils/date';
 
 const STATUS_META = {
-  pending: { label: 'Menunggu konfirmasi', color: colors.warning },
-  confirmed: { label: 'Terkonfirmasi', color: colors.success },
-  planned: { label: 'Direncanakan', color: colors.warning },
-  converted: { label: 'Terkonversi', color: colors.success },
-  completed: { label: 'Selesai', color: colors.success },
-  template: { label: 'Template Automation', color: colors.primary },
+  pending: { label: 'Menunggu konfirmasi', tone: 'danger' },
+  confirmed: { label: 'Terkonfirmasi', tone: 'success' },
+  planned: { label: 'Direncanakan', tone: 'neutral' },
+  converted: { label: 'Terkonversi', tone: 'success' },
+  completed: { label: 'Selesai', tone: 'success' },
+  template: { label: 'Template Automation', tone: 'primary' },
 };
 
 function fundName(funds, fundId) {
   return funds.find((fund) => fund.id === fundId)?.name ?? 'Fund';
 }
 
-function transactionSummary(transaction, funds) {
-  if (!transaction) {
-    return null;
-  }
-  if (transaction.type === 'transfer') {
-    return `${fundName(funds, transaction.sourceFundId)} → ${fundName(
-      funds,
-      transaction.destinationFundId
-    )}`;
-  }
-  if (transaction.type === 'expense') {
-    return `Dari ${fundName(funds, transaction.sourceFundId)}`;
-  }
-  return `Ke ${fundName(funds, transaction.destinationFundId)}`;
-}
-
 function ItemRow({ item, funds, busy, actions }) {
-  const status = STATUS_META[item.status] ?? { label: item.status, color: colors.textMuted };
+  const [menuOpen, setMenuOpen] = useState(false);
+  const status = STATUS_META[item.status] ?? { label: item.status, tone: 'neutral' };
   const transaction = item.transaction;
   const amount = transaction?.amount ?? item.amount;
+  const displayFund = fundName(funds, item.fundId ?? item.sourceFundId ?? item.destinationFundId);
+
+  const closeMenu = () => setMenuOpen(false);
+  const run = (callback) => {
+    closeMenu();
+    callback?.();
+  };
 
   return (
-    <View style={styles.row}>
-      <View style={styles.identity}>
-        <Text style={styles.name} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <View style={styles.metaRow}>
-          <Text style={[styles.status, { color: status.color }]}>{status.label}</Text>
-          <Text style={styles.dot}>·</Text>
-          <Text style={styles.meta}>{formatRupiah(item.amount)}</Text>
+    <Card style={styles.card}>
+      <View style={styles.head}>
+        <View style={styles.headText}>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Badge label={status.label} tone={status.tone} style={styles.status} />
         </View>
-        {transaction ? (
-          <>
-            <Text style={styles.meta} numberOfLines={1}>
-              {transactionSummary(transaction, funds)}
-            </Text>
-            <Text style={styles.meta}>
-              {formatDate(occurredAtToDateKey(transaction.occurredAt) ?? transaction.occurredAt)} ·{' '}
-              {formatRupiah(amount)}
-            </Text>
-          </>
-        ) : null}
+        <Pressable
+          onPress={() => setMenuOpen(true)}
+          disabled={busy}
+          accessibilityRole="button"
+          accessibilityLabel={`Aksi ${item.name}`}
+          style={({ pressed }) => [styles.menuButton, pressed && styles.menuButtonPressed]}
+        >
+          <Ionicons name="ellipsis-horizontal" size={20} color={colors.iconMuted} />
+        </Pressable>
       </View>
 
-      <View style={styles.actions}>
-        {item.status === 'pending' ? (
-          <>
-            <AppButton
-              title="Konfirmasi"
-              size="sm"
-              onPress={() => actions.onConfirm?.(item)}
-              disabled={busy}
-            />
-            <AppButton
-              title="Hapus"
-              size="sm"
-              variant="ghost"
-              onPress={() => actions.onDeleteItem?.(item)}
-              disabled={busy}
-            />
-          </>
-        ) : null}
-
-        {item.status === 'planned' ? (
-          <>
-            <AppButton
-              title="Ubah"
-              size="sm"
-              variant="ghost"
-              onPress={() => actions.onEditItem?.(item)}
-              disabled={busy}
-            />
-            <AppButton
-              title="Konversi"
-              size="sm"
-              onPress={() => actions.onConvert?.(item)}
-              disabled={busy}
-            />
-            <AppButton
-              title="Hapus"
-              size="sm"
-              variant="ghost"
-              onPress={() => actions.onDeleteItem?.(item)}
-              disabled={busy}
-            />
-          </>
-        ) : null}
-
-        {['confirmed', 'converted', 'completed'].includes(item.status) && transaction ? (
-          <>
-            <AppButton
-              title="Ubah trx"
-              size="sm"
-              variant="ghost"
-              onPress={() => actions.onEditTransaction?.(item)}
-              disabled={busy}
-            />
-            <AppButton
-              title="Hapus trx"
-              size="sm"
-              variant="ghost"
-              onPress={() => actions.onDeleteTransaction?.(item)}
-              disabled={busy}
-            />
-          </>
-        ) : null}
+      <View style={styles.detailRow}>
+        <Text style={styles.fund}>{displayFund}</Text>
+        <Text style={styles.amount}>{formatRupiah(amount)}</Text>
       </View>
-    </View>
+
+      {transaction ? (
+        <Text style={styles.transactionNote} numberOfLines={1}>
+          {formatDate(occurredAtToDateKey(transaction.occurredAt) ?? transaction.occurredAt)}
+        </Text>
+      ) : null}
+
+      {item.status === 'pending' ? (
+        <View style={styles.actions}>
+          <AppButton
+            title="Konfirmasi"
+            size="sm"
+            variant="ghost"
+            onPress={() => actions.onConfirm?.(item)}
+            disabled={busy}
+            style={styles.actionButton}
+          />
+          <AppButton
+            title="Ubah menjadi transaksi"
+            size="sm"
+            variant="outline"
+            onPress={() => actions.onConvert?.(item)}
+            disabled={busy}
+            style={styles.actionButtonWide}
+          />
+        </View>
+      ) : null}
+
+      {item.status === 'planned' ? (
+        <View style={styles.actions}>
+          <AppButton
+            title="Ubah menjadi transaksi"
+            size="sm"
+            variant="outline"
+            onPress={() => actions.onConvert?.(item)}
+            disabled={busy}
+            style={styles.actionButtonWide}
+          />
+        </View>
+      ) : null}
+
+      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={closeMenu}>
+        <Pressable style={styles.backdrop} onPress={closeMenu} accessibilityRole="button" accessibilityLabel="Tutup aksi" />
+        <View style={styles.menu}>
+          {['pending', 'planned', 'template'].includes(item.status) ? (
+            <Pressable style={styles.menuItem} disabled={busy} onPress={() => run(() => actions.onEditItem?.(item))} accessibilityRole="button">
+              <Text style={styles.menuLabel}>Ubah item</Text>
+            </Pressable>
+          ) : null}
+          {!transaction ? (
+            <Pressable style={styles.menuItem} disabled={busy} onPress={() => run(() => actions.onDeleteItem?.(item))} accessibilityRole="button">
+              <Text style={styles.menuLabel}>Hapus item</Text>
+            </Pressable>
+          ) : (
+            <>
+              <Pressable style={styles.menuItem} disabled={busy} onPress={() => run(() => actions.onEditTransaction?.(item))} accessibilityRole="button">
+                <Text style={styles.menuLabel}>Ubah transaksi</Text>
+              </Pressable>
+              <Pressable style={[styles.menuItem, styles.menuItemDanger]} disabled={busy} onPress={() => run(() => actions.onDeleteTransaction?.(item))} accessibilityRole="button">
+                <Text style={[styles.menuLabel, styles.menuLabelDanger]}>Hapus transaksi</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      </Modal>
+    </Card>
   );
 }
 
 export default function PocketItemList({ items = [], funds = [], busy = false, actions = {} }) {
   return (
-    <View style={styles.card}>
+    <View>
       {items.map((item) => (
         <ItemRow key={item.id} item={item} funds={funds} busy={busy} actions={actions} />
       ))}
@@ -141,48 +137,95 @@ export default function PocketItemList({ items = [], funds = [], busy = false, a
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
   },
-  row: {
+  head: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
   },
-  identity: {
+  headText: {
     flex: 1,
-    paddingRight: spacing.sm,
   },
   name: {
+    ...typography.subheading,
+    color: colors.text,
+  },
+  status: {
+    marginTop: spacing.xs,
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.button,
+    marginTop: -8,
+    marginRight: -8,
+  },
+  menuButtonPressed: {
+    backgroundColor: colors.surfaceMuted,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  fund: {
+    ...typography.caption,
+    color: colors.textMuted,
+  },
+  amount: {
+    ...typography.bodyStrong,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  transactionNote: {
+    ...typography.meta,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  actions: {
+    flexDirection: 'row',
+    marginTop: spacing.md,
+  },
+  actionButton: {
+    minWidth: 96,
+    marginRight: spacing.sm,
+  },
+  actionButtonWide: {
+    minWidth: 163,
+  },
+  backdrop: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: colors.overlay,
+  },
+  menu: {
+    position: 'absolute',
+    left: spacing.xl,
+    right: spacing.xl,
+    top: '50%',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.sm,
+    ...shadows.floating,
+  },
+  menuItem: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.sm,
+  },
+  menuItemDanger: {
+    backgroundColor: colors.dangerSoft,
+  },
+  menuLabel: {
     ...typography.bodyStrong,
     color: colors.text,
   },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.xxs,
-  },
-  status: {
-    ...typography.caption,
-  },
-  dot: {
-    ...typography.caption,
-    color: colors.textSubtle,
-    marginHorizontal: spacing.xxs,
-  },
-  meta: {
-    ...typography.caption,
-    color: colors.textMuted,
-    marginTop: spacing.xxs,
-  },
-  actions: {
-    alignItems: 'flex-end',
-    flexWrap: 'wrap',
-    maxWidth: 150,
+  menuLabelDanger: {
+    color: colors.danger,
   },
 });

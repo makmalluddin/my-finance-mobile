@@ -4,8 +4,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { DashboardOverview, useDashboard } from '@/modules/dashboard';
 import { useNotifications } from '@/modules/notifications';
-import { ErrorBanner, PageHeader, Screen } from '@/shared/components';
-import { colors, radius, spacing, typography } from '@/shared/theme';
+import { ErrorBanner, Screen } from '@/shared/components';
+import { colors, borderWidth, radius, typography } from '@/shared/theme';
 
 /** Tombol Notifikasi di header kanan. Badge memakai jumlah notifikasi pending. */
 function NotificationButton({ count }) {
@@ -17,7 +17,7 @@ function NotificationButton({ count }) {
       hitSlop={8}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
-      <Ionicons name="notifications-outline" size={22} color={colors.text} />
+      <Ionicons name="notifications-outline" size={21} color={colors.text} />
       {count > 0 ? (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{count}</Text>
@@ -43,11 +43,13 @@ export default function DashboardScreen() {
         <RefreshControl refreshing={loading} onRefresh={() => refresh({ silent: true })} />
       }
     >
-      <PageHeader
-        title="Dashboard"
-        subtitle="Ringkasan keuangan Anda"
-        right={<NotificationButton count={notifications.length} />}
-      />
+      <View style={styles.header}>
+        <View style={styles.headerText}>
+          <Text style={styles.greetingName}>Nadia</Text>
+          <Text style={styles.greeting}>Good evening</Text>
+        </View>
+        <NotificationButton count={notifications.length} />
+      </View>
 
       <ErrorBanner message={error} onDismiss={clearError} />
       <DashboardOverview dashboard={dashboard} loading={loading} />
@@ -56,31 +58,55 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  headerText: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  greetingName: {
+    ...typography.display,
+    color: colors.text,
+  },
+  greeting: {
+    ...typography.bodyStrong,
+    fontWeight: '650',
+    color: colors.success,
+    marginTop: 4,
+  },
   button: {
     width: 44,
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.button,
+    backgroundColor: colors.buttonSoft,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
   },
   pressed: {
     opacity: 0.7,
   },
   badge: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    minWidth: spacing.xl,
-    height: spacing.xl,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primary,
+    top: -4,
+    right: -4,
+    minWidth: 19,
+    height: 19,
+    borderRadius: 20,
+    borderWidth: borderWidth.thick,
+    borderColor: colors.surface,
+    backgroundColor: colors.notificationBadge,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xxs,
+    paddingHorizontal: 2,
   },
   badgeText: {
-    ...typography.captionStrong,
-    color: colors.textInverse,
+    ...typography.notificationBadge,
+    color: colors.notificationBadgeText,
   },
 });

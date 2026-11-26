@@ -16,6 +16,7 @@ export default function Card({
   const cardStyle = [
     styles.card,
     tone === 'muted' && styles.muted,
+    tone === 'accent' && styles.accent,
     padded && styles.padded,
     style,
   ];
@@ -40,15 +41,18 @@ export default function Card({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     ...shadows.card,
   },
   muted: {
     backgroundColor: colors.surfaceMuted,
-    shadowOpacity: 0,
-    elevation: 0,
+    borderColor: colors.border,
+  },
+  accent: {
+    backgroundColor: colors.surfaceAccent,
+    borderColor: colors.balanceBorder,
   },
   padded: {
     padding: layout.cardPadding,

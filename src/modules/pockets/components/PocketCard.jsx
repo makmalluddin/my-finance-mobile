@@ -1,13 +1,31 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { AppButton } from '@/shared/components';
+import { AppButton, Badge } from '@/shared/components';
 import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
 const TYPE_META = {
-  income: { label: 'Income Pocket', icon: 'arrow-down-circle-outline', color: colors.success },
-  expense: { label: 'Expense Pocket', icon: 'wallet-outline', color: colors.warning },
-  transfer: { label: 'Transfer Pocket', icon: 'swap-horizontal-outline', color: colors.primary },
+  income: {
+    label: 'Income',
+    icon: 'arrow-down-outline',
+    color: colors.success,
+    background: colors.successSoft,
+    tone: 'income',
+  },
+  expense: {
+    label: 'Expense',
+    icon: 'wallet-outline',
+    color: colors.danger,
+    background: colors.dangerSoft,
+    tone: 'expense',
+  },
+  transfer: {
+    label: 'Transfer',
+    icon: 'swap-horizontal-outline',
+    color: colors.transfer,
+    background: colors.transferSoft,
+    tone: 'transfer',
+  },
 };
 
 export default function PocketCard({
@@ -31,25 +49,22 @@ export default function PocketCard({
         accessibilityLabel={`Buka Pocket ${pocket.name}`}
         style={({ pressed }) => [styles.main, pressed && styles.pressed]}
       >
-        <View style={[styles.iconWrap, { backgroundColor: `${meta.color}18` }]}>
-          <Ionicons name={meta.icon} size={22} color={meta.color} />
+        <View style={[styles.iconWrap, { backgroundColor: meta.background }]}>
+          <Ionicons name={meta.icon} size={18} color={meta.color} />
         </View>
-
         <View style={styles.identity}>
           <Text style={styles.name} numberOfLines={1}>
             {pocket.name}
           </Text>
-          <Text style={styles.type}>{meta.label}</Text>
-          {pocket.description ? (
-            <Text style={styles.description} numberOfLines={2}>
-              {pocket.description}
-            </Text>
-          ) : null}
-          {pocket.isArchived ? <Text style={styles.badge}>Arsip</Text> : null}
+          <Badge label={pocket.isArchived ? 'Diarsipkan' : meta.label} tone={pocket.isArchived ? 'neutral' : meta.tone} />
         </View>
-
-        <Ionicons name="chevron-forward" size={20} color={colors.textSubtle} />
       </Pressable>
+
+      {pocket.description ? (
+        <Text style={styles.description} numberOfLines={2}>
+          {pocket.description}
+        </Text>
+      ) : null}
 
       {pocket.type === 'transfer' && summary ? (
         <View style={styles.summary}>
@@ -68,35 +83,33 @@ export default function PocketCard({
         </View>
       ) : null}
 
-      <View style={styles.footer}>
-        <Text style={styles.itemCount}>
-          {itemCount} item · {pocket.hasEverHadItem ? 'tipe terkunci' : 'tipe bisa diubah'}
-        </Text>
-        <View style={styles.actions}>
-          <AppButton
-            title="Ubah"
-            size="sm"
-            variant="ghost"
-            onPress={() => onEdit?.(pocket)}
-            disabled={busy}
-          />
-          <AppButton
-            title={pocket.isArchived ? 'Aktifkan' : 'Arsipkan'}
-            size="sm"
-            variant="ghost"
-            onPress={() =>
-              pocket.isArchived ? onUnarchive?.(pocket) : onArchive?.(pocket)
-            }
-            disabled={busy}
-          />
-          <AppButton
-            title="Hapus"
-            size="sm"
-            variant="ghost"
-            onPress={() => onDelete?.(pocket)}
-            disabled={busy}
-          />
-        </View>
+      <Text style={styles.itemCount}>{itemCount} item</Text>
+
+      <View style={styles.actions}>
+        <AppButton
+          title="Edit"
+          size="sm"
+          variant="outline"
+          onPress={() => onEdit?.(pocket)}
+          disabled={busy}
+          style={styles.actionButton}
+        />
+        <AppButton
+          title={pocket.isArchived ? 'Aktifkan' : 'Arsipkan'}
+          size="sm"
+          variant="outline"
+          onPress={() => (pocket.isArchived ? onUnarchive?.(pocket) : onArchive?.(pocket))}
+          disabled={busy}
+          style={styles.actionButton}
+        />
+        <AppButton
+          title="Hapus"
+          size="sm"
+          variant="dangerOutline"
+          onPress={() => onDelete?.(pocket)}
+          disabled={busy}
+          style={styles.actionButton}
+        />
       </View>
     </View>
   );
@@ -105,85 +118,72 @@ export default function PocketCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
-    padding: spacing.md,
+    padding: spacing.md + 1,
     marginBottom: spacing.md,
   },
   main: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   pressed: {
     opacity: 0.7,
   },
   iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.pill,
+    width: 37,
+    height: 37,
+    borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.sm,
+    marginRight: spacing.md,
   },
   identity: {
     flex: 1,
-    paddingRight: spacing.sm,
   },
   name: {
-    ...typography.bodyStrong,
+    ...typography.subheading,
     color: colors.text,
-  },
-  type: {
-    ...typography.caption,
-    color: colors.textMuted,
-    marginTop: spacing.xxs,
+    marginBottom: spacing.xs,
   },
   description: {
     ...typography.caption,
     color: colors.textMuted,
-    marginTop: spacing.xxs,
-  },
-  badge: {
-    ...typography.caption,
-    color: colors.warning,
-    marginTop: spacing.xxs,
+    marginTop: spacing.md,
   },
   summary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: spacing.md,
-    paddingTop: spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    backgroundColor: colors.surfaceMuted,
   },
   summaryItem: {
     flex: 1,
   },
   summaryLabel: {
-    ...typography.caption,
+    ...typography.meta,
     color: colors.textMuted,
   },
   summaryValue: {
-    ...typography.bodyStrong,
+    ...typography.amountSmall,
     color: colors.text,
     marginTop: spacing.xxs,
   },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: spacing.md,
-    paddingTop: spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
-  },
   itemCount: {
-    ...typography.caption,
-    color: colors.textMuted,
-    flex: 1,
+    ...typography.meta,
+    fontWeight: '700',
+    color: colors.textSubtle,
+    marginTop: spacing.sm,
   },
   actions: {
     flexDirection: 'row',
+    marginTop: spacing.md,
+  },
+  actionButton: {
+    minWidth: 60,
+    marginRight: spacing.sm,
   },
 });

@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { AppButton, ErrorBanner, Screen, TextField } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { toAppError } from '@/shared/utils/errors';
 import { useAuth } from '../AuthProvider';
 
@@ -53,14 +54,17 @@ export default function AuthForm({ mode }) {
     >
       <Screen>
         <View style={styles.hero}>
-          <Text style={styles.brand}>My Finance</Text>
-          <Text style={styles.title}>
-            {isSignUp ? 'Buat akun baru' : 'Selamat datang kembali'}
-          </Text>
+          <View style={styles.brandRow}>
+            <View style={styles.logo}>
+              <Ionicons name="wallet-outline" size={22} color={colors.textInverse} />
+            </View>
+            <Text style={styles.brand}>My Finance</Text>
+          </View>
+          <Text style={styles.title}>{isSignUp ? 'Buat akun' : 'Selamat datang'}</Text>
           <Text style={styles.subtitle}>
             {isSignUp
-              ? 'Mulai mencatat keuangan dengan akun Anda sendiri.'
-              : 'Masuk untuk mengelola Fund, Pocket, dan transaksi Anda.'}
+              ? 'Daftar untuk mulai mencatat keuangan Anda.'
+              : 'Masuk untuk melihat ringkasan keuangan Anda.'}
           </Text>
         </View>
 
@@ -127,16 +131,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   hero: {
-    marginTop: spacing.xxl,
+    marginTop: spacing.lg,
     marginBottom: spacing.xl,
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xxl,
+  },
+  logo: {
+    width: 43,
+    height: 43,
+    borderRadius: radius.md,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md,
   },
   brand: {
     ...typography.brand,
-    color: colors.primary,
-    marginBottom: spacing.sm,
+    color: colors.text,
   },
   title: {
-    ...typography.heading,
+    ...typography.display,
     color: colors.text,
   },
   subtitle: {
@@ -151,14 +168,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
   },
   footerText: {
     ...typography.body,
     color: colors.textMuted,
   },
   footerLink: {
-    ...typography.bodyStrong,
+    ...typography.button,
     color: colors.primary,
   },
 });

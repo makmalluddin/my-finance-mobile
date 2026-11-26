@@ -1,14 +1,29 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Text, View } from 'react-native';
-import { AppButton } from '@/shared/components';
-import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, radius, spacing, borderWidth, typography, shadows } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 import { fromDateKey, MONTHS_SHORT, occurredAtToDateKey } from '@/shared/utils/date';
 
 const TYPE_META = {
-  income: { label: 'Income', icon: 'arrow-down-circle-outline', color: colors.success },
-  expense: { label: 'Expense', icon: 'arrow-up-circle-outline', color: colors.danger },
-  transfer: { label: 'Transfer', icon: 'swap-horizontal-outline', color: colors.primary },
+  income: {
+    label: 'Income',
+    icon: 'arrow-down-outline',
+    color: colors.success,
+    background: colors.successSoft,
+  },
+  expense: {
+    label: 'Expense',
+    icon: 'arrow-up-outline',
+    color: colors.danger,
+    background: colors.dangerSoft,
+  },
+  transfer: {
+    label: 'Transfer',
+    icon: 'swap-horizontal-outline',
+    color: colors.transfer,
+    background: colors.transferSoft,
+  },
 };
 
 function groupByDate(transactions) {
@@ -48,14 +63,15 @@ function transactionDetail(transaction) {
 }
 
 function TransactionRow({ transaction, busy, onEdit, onDelete }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const meta = TYPE_META[transaction.type] ?? TYPE_META.transfer;
   const managedByPocket = Boolean(transaction.pocketItemId);
-  const sign = transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : '';
+  const sign = transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '−' : '';
 
   return (
     <View style={styles.row}>
-      <View style={[styles.iconWrap, { backgroundColor: `${meta.color}18` }]}>
-        <Ionicons name={meta.icon} size={20} color={meta.color} />
+      <View style={[styles.iconWrap, { backgroundColor: meta.background }]}>
+        <Ionicons name={meta.icon} size={18} color={meta.color} />
       </View>
 
       <View style={styles.identity}>
@@ -75,23 +91,44 @@ function TransactionRow({ transaction, busy, onEdit, onDelete }) {
           {sign}
           {formatRupiah(transaction.amount)}
         </Text>
-        <View style={styles.rowActions}>
-          <AppButton
-            title="Ubah"
-            size="sm"
-            variant="ghost"
-            onPress={() => onEdit?.(transaction)}
-            disabled={busy || managedByPocket}
-          />
-          <AppButton
-            title="Hapus"
-            size="sm"
-            variant="ghost"
-            onPress={() => onDelete?.(transaction)}
-            disabled={busy || managedByPocket}
-          />
-        </View>
+        <Pressable
+          onPress={() => setMenuOpen(true)}
+          disabled={busy}
+          accessibilityRole="button"
+          accessibilityLabel={`Aksi ${transaction.categoryName ?? meta.label}`}
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
+        >
+          <Ionicons name="ellipsis-horizontal" size={20} color={colors.iconMuted} />
+        </Pressable>
       </View>
+
+      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} accessibilityRole="button" accessibilityLabel="Tutup aksi" />
+        <View style={styles.menu}>
+          <Pressable
+            style={styles.menuItem}
+            disabled={busy || managedByPocket}
+            onPress={() => {
+              setMenuOpen(false);
+              onEdit?.(transaction);
+            }}
+            accessibilityRole="button"
+          >
+            <Text style={styles.menuLabel}>Ubah transaksi</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.menuItem, styles.menuItemDanger]}
+            disabled={busy || managedByPocket}
+            onPress={() => {
+              setMenuOpen(false);
+              onDelete?.(transaction);
+            }}
+            accessibilityRole="button"
+          >
+            <Text style={[styles.menuLabel, styles.menuLabelDanger]}>Hapus transaksi</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -126,31 +163,26 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   groupTitle: {
-    ...typography.label,
-    color: colors.textMuted,
-    marginBottom: spacing.sm,
+    ...typography.captionStrong,
+    color: colors.textSubtle,
+    marginBottom: spacing.md,
   },
   groupCard: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
   },
   iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.pill,
+    width: 37,
+    height: 37,
+    borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.sm,
+    marginRight: spacing.md,
   },
   identity: {
     flex: 1,
@@ -161,12 +193,12 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   detail: {
-    ...typography.caption,
+    ...typography.meta,
     color: colors.textMuted,
     marginTop: spacing.xxs,
   },
   pocketBadge: {
-    ...typography.caption,
+    ...typography.meta,
     color: colors.warning,
     marginTop: spacing.xxs,
   },
@@ -174,10 +206,49 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   amount: {
-    ...typography.bodyStrong,
+    ...typography.amountSmall,
   },
-  rowActions: {
-    flexDirection: 'row',
-    marginTop: spacing.xs,
+  actionButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -12,
+    borderRadius: radius.button,
+  },
+  actionPressed: {
+    backgroundColor: colors.surfaceMuted,
+  },
+  backdrop: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: colors.overlay,
+  },
+  menu: {
+    position: 'absolute',
+    left: spacing.xl,
+    right: spacing.xl,
+    top: '50%',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
+    padding: spacing.sm,
+    ...shadows.floating,
+  },
+  menuItem: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.sm,
+  },
+  menuItemDanger: {
+    backgroundColor: colors.dangerSoft,
+  },
+  menuLabel: {
+    ...typography.bodyStrong,
+    color: colors.text,
+  },
+  menuLabelDanger: {
+    color: colors.danger,
   },
 });

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, spacing, typography } from '../theme';
 
 /**
  * Keadaan kosong dengan ikon, judul, pesan, dan aksi opsional.
@@ -32,16 +32,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   iconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.xl,
+    width: 57,
+    height: 57,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primarySoft,
-    marginBottom: spacing.md,
+    backgroundColor: colors.successSoft,
+    marginBottom: spacing.xl,
   },
   title: {
     ...typography.subheading,
+    fontSize: 19,
+    lineHeight: 25,
     color: colors.text,
     textAlign: 'center',
   },

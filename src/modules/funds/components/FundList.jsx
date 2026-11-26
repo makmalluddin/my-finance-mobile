@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionTitle: {
-    ...typography.subheading,
+    ...typography.heading,
     color: colors.text,
     marginBottom: spacing.sm,
   },

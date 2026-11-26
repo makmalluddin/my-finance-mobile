@@ -105,12 +105,12 @@ const styles = StyleSheet.create({
   field: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 48,
+    minHeight: 45,
     paddingHorizontal: spacing.md,
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.input,
     borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
+    borderColor: colors.borderStrong,
   },
   fieldMultiline: {
     alignItems: 'flex-start',

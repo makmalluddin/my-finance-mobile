@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { Badge } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
 
 /**
@@ -19,11 +20,11 @@ export default function CategorySummary({ categories, loading = false }) {
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <Text style={styles.label}>Income</Text>
+        <Badge label="Income" tone="income" />
         <Text style={styles.names}>{renderNames(income)}</Text>
       </View>
       <View style={[styles.row, styles.divider]}>
-        <Text style={styles.label}>Expense</Text>
+        <Badge label="Expense" tone="expense" />
         <Text style={styles.names}>{renderNames(expense)}</Text>
       </View>
     </View>
@@ -35,19 +36,18 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: spacing.sm,
   },
   divider: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
-  label: {
-    ...typography.label,
-    color: colors.textMuted,
-  },
   names: {
-    ...typography.caption,
-    color: colors.text,
-    marginTop: spacing.xxs,
+    ...typography.captionStrong,
+    color: colors.textMuted,
+    marginLeft: spacing.md,
+    flex: 1,
   },
 });

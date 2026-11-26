@@ -96,7 +96,6 @@ export default function FundsScreen() {
     >
       <PageHeader
         title="Fund"
-        subtitle="Active Fund dan Savings/Goal Fund"
         right={
           <AppButton
             title="Buat Fund"
@@ -164,7 +163,8 @@ export default function FundsScreen() {
 
 const styles = StyleSheet.create({
   headerButton: {
-    minWidth: 110,
+    minWidth: 112,
+    paddingHorizontal: spacing.md,
     marginTop: spacing.xxs,
   },
 });

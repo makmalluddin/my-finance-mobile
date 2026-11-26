@@ -1,6 +1,7 @@
 import { useFocusEffect, router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl, StyleSheet, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import {
   PocketCard,
   PocketForm,
@@ -15,13 +16,12 @@ import {
   LoadingState,
   PageHeader,
   Screen,
-  SelectField,
 } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
 const FILTER_OPTIONS = [
-  { label: 'Semua Pocket', value: 'all' },
+  { label: 'Semua', value: 'all' },
   { label: 'Income', value: 'income' },
   { label: 'Expense', value: 'expense' },
   { label: 'Transfer', value: 'transfer' },
@@ -93,7 +93,6 @@ export default function PocketsScreen() {
     >
       <PageHeader
         title="Pocket"
-        subtitle="Kelola rencana dan alokasi dana"
         right={
           <AppButton
             title="Tambah"
@@ -108,21 +107,38 @@ export default function PocketsScreen() {
 
       <ErrorBanner message={error} onDismiss={clearError} />
 
-      <Card style={styles.allocationCard}>
-        <Text style={styles.allocationLabel}>Alokasi Planned Expense</Text>
+      <Card style={styles.allocationCard} tone="accent">
+        <View style={styles.allocationHead}>
+          <View style={styles.allocationIcon}>
+            <Ionicons name="wallet-outline" size={17} color={colors.primary} />
+          </View>
+          <Text style={styles.allocationLabel}>Alokasi Planned Expense</Text>
+        </View>
         <Text style={styles.allocationValue}>{formatRupiah(allocation)}</Text>
         <Text style={styles.allocationHint}>
-          Nominal ini sudah mengurangi Active Balance di Dashboard.
+          Mengurangi Active Balance di Dashboard.
         </Text>
       </Card>
 
-      <SelectField
-        label="Filter Pocket"
-        value={filter}
-        options={FILTER_OPTIONS}
-        onChange={setFilter}
-        containerStyle={styles.filter}
-      />
+      <View style={styles.filterRow}>
+        {FILTER_OPTIONS.map((option) => (
+          <Pressable
+            key={option.value}
+            onPress={() => setFilter(option.value)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filter === option.value }}
+            style={({ pressed }) => [
+              styles.chip,
+              filter === option.value && styles.chipActive,
+              pressed && styles.chipPressed,
+            ]}
+          >
+            <Text style={[styles.chipLabel, filter === option.value && styles.chipLabelActive]}>
+              {option.label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
 
       {loading && pockets.length === 0 ? (
         <LoadingState message="Memuat Pocket..." />
@@ -193,27 +209,68 @@ export default function PocketsScreen() {
 
 const styles = StyleSheet.create({
   headerButton: {
-    minWidth: 90,
+    minWidth: 97,
+    paddingHorizontal: spacing.md,
   },
   allocationCard: {
+    backgroundColor: colors.pocketSummaryBg,
+    borderColor: colors.balanceBorder,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md + 1,
+    paddingHorizontal: spacing.md + 1,
     marginBottom: spacing.lg,
+  },
+  allocationHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  allocationIcon: {
+    width: 29,
+    height: 29,
+    borderRadius: radius.sm,
+    backgroundColor: colors.balanceIconBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md + 1,
   },
   allocationLabel: {
-    ...typography.caption,
-    color: colors.textMuted,
+    ...typography.bodyStrong,
+    color: colors.balanceLabel,
   },
   allocationValue: {
-    ...typography.heading,
-    color: colors.text,
-    marginTop: spacing.xxs,
+    ...typography.amount,
+    color: colors.pocketSummaryAmount,
+    marginTop: spacing.sm,
   },
   allocationHint: {
-    ...typography.caption,
-    color: colors.textSubtle,
-    marginTop: spacing.xxs,
+    fontSize: 11,
+    color: colors.pocketSummaryText,
+    marginTop: spacing.xs,
   },
-  filter: {
+  filterRow: {
+    flexDirection: 'row',
     marginBottom: spacing.lg,
+  },
+  chip: {
+    height: 44,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.chip,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+  chipActive: {
+    backgroundColor: colors.chipActive,
+  },
+  chipPressed: {
+    opacity: 0.7,
+  },
+  chipLabel: {
+    ...typography.captionStrong,
+    color: colors.textSubtle,
+  },
+  chipLabelActive: {
+    color: colors.primary,
   },
   createButton: {
     minWidth: 160,

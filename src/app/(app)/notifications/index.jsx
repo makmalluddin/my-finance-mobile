@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, RefreshControl, StyleSheet, Text } from 'react-native';
+import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { automationService } from '@/appservices/automation/automationService';
 import { useFunds } from '@/modules/funds';
 import {
@@ -13,10 +13,9 @@ import {
   EmptyState,
   ErrorBanner,
   LoadingState,
-  PageHeader,
   Screen,
 } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 
 /**
  * Daftar kartu konfirmasi Automation. Semua aksi mengubah occurrence di
@@ -84,21 +83,23 @@ export default function NotificationsScreen() {
     <Screen
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshAll} />}
     >
-      <Pressable
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Kembali ke Dashboard"
-        hitSlop={8}
-        style={styles.backButton}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.text} />
-        <Text style={styles.backText}>Dashboard</Text>
-      </Pressable>
-
-      <PageHeader
-        title="Notifikasi"
-        subtitle="Konfirmasi jadwal Income dan Expense yang sudah jatuh tempo."
-      />
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Kembali ke Dashboard"
+          hitSlop={8}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
+        </Pressable>
+        <View style={styles.headerText}>
+          <Text style={styles.headerTitle}>Notifikasi</Text>
+          <Text style={styles.headerSubtitle}>
+            Konfirmasi jadwal pemasukan dan pengeluaran yang jatuh tempo.
+          </Text>
+        </View>
+      </View>
 
       {error ? <ErrorBanner message={error} onDismiss={clearError} /> : null}
       {fundsError ? <ErrorBanner message={fundsError} onDismiss={clearFundsError} /> : null}
@@ -141,14 +142,30 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
+  header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    alignItems: 'flex-start',
+    marginBottom: spacing.xl,
   },
-  backText: {
-    ...typography.bodyStrong,
-    color: colors.text,
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerText: {
+    flex: 1,
     marginLeft: spacing.sm,
+    paddingTop: spacing.xs,
+  },
+  headerTitle: {
+    ...typography.detailTitle,
+    color: colors.text,
+  },
+  headerSubtitle: {
+    ...typography.body,
+    color: colors.textMuted,
+    marginTop: spacing.sm,
   },
 });

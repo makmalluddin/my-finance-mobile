@@ -1,68 +1,123 @@
 /**
- * Gaya teks internal. `fontWeight` ditulis sebagai string agar konsisten
- * antara Android dan iOS.
+ * Skala tipografi mockup Figma Make. `fontWeight` ditulis sebagai string agar
+ * konsisten antara Android dan iOS.
  */
 export const typography = {
   display: {
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '700',
+    fontSize: 32,
+    lineHeight: 37,
+    fontWeight: '800',
+    letterSpacing: -1.2,
+  },
+  balanceAmount: {
+    fontSize: 33,
+    lineHeight: 39,
+    fontWeight: '800',
+    letterSpacing: -1,
+  },
+  detailTitle: {
+    fontSize: 25,
+    lineHeight: 29,
+    fontWeight: '800',
   },
   title: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: '700',
+    fontSize: 28,
+    lineHeight: 33,
+    fontWeight: '800',
+  },
+  sectionTitle: {
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: '800',
   },
   heading: {
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: '700',
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: '800',
   },
   subheading: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '600',
+    fontSize: 15,
+    lineHeight: 18,
+    fontWeight: '800',
   },
   body: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 13,
+    lineHeight: 19.5,
     fontWeight: '400',
   },
   bodyStrong: {
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: '600',
+    fontSize: 13,
+    lineHeight: 19.5,
+    fontWeight: '750',
   },
   label: {
-    fontSize: 13,
-    lineHeight: 18,
-    fontWeight: '600',
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '750',
   },
   caption: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '400',
   },
-  amount: {
-    fontSize: 28,
-    lineHeight: 34,
+  captionStrong: {
+    fontSize: 11,
+    lineHeight: 15,
     fontWeight: '700',
   },
-  captionStrong: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '600',
+  amountSmall: {
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '750',
+  },
+  amountLarge: {
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: '750',
+  },
+  amount: {
+    fontSize: 23,
+    lineHeight: 28,
+    fontWeight: '800',
   },
   button: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '700',
+  },
+  badge: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+  },
+  notificationBadge: {
+    fontSize: 9,
+    lineHeight: 13.5,
+    fontWeight: '800',
+  },
+  meta: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '400',
+  },
+  chartLabel: {
+    fontSize: 9,
+    lineHeight: 13.5,
+    fontWeight: '550',
+  },
+  tabLabel: {
+    fontSize: 9,
+    lineHeight: 13.5,
+    fontWeight: '650',
+  },
+  tabLabelActive: {
+    fontSize: 9,
+    lineHeight: 13.5,
+    fontWeight: '800',
   },
   brand: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    fontSize: 17,
+    lineHeight: 21,
+    fontWeight: '800',
   },
 };

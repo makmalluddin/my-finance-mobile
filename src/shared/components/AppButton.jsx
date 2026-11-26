@@ -16,11 +16,11 @@ const VARIANTS = {
     text: colors.text,
     disabledBackground: colors.surfaceMuted,
   },
-  ghost: {
+  outline: {
     background: 'transparent',
     pressedBackground: colors.primarySoft,
-    border: 'transparent',
-    text: colors.primary,
+    border: colors.borderStrong,
+    text: colors.iconMuted,
     disabledBackground: 'transparent',
   },
   danger: {
@@ -30,29 +30,31 @@ const VARIANTS = {
     text: colors.textInverse,
     disabledBackground: colors.dangerDisabled,
   },
+  dangerOutline: {
+    background: colors.surface,
+    pressedBackground: colors.dangerSoft,
+    border: colors.borderStrong,
+    text: colors.danger,
+    disabledBackground: colors.surfaceMuted,
+  },
+  ghost: {
+    background: 'transparent',
+    pressedBackground: colors.primarySoft,
+    border: 'transparent',
+    text: colors.primary,
+    disabledBackground: 'transparent',
+  },
 };
 
 const SIZES = {
-  sm: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    fontSize: typography.button.fontSize,
-  },
-  md: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    fontSize: typography.body.fontSize,
-  },
-  lg: {
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    fontSize: typography.subheading.fontSize,
-  },
+  sm: { paddingHorizontal: spacing.md, minHeight: 44 },
+  md: { paddingHorizontal: spacing.lg, minHeight: 44 },
+  lg: { paddingHorizontal: spacing.xl, minHeight: 48 },
 };
 
 /**
- * Tombol utama aplikasi dengan variasi `primary`, `secondary`, `ghost`,
- * dan `danger`. Menonaktifkan diri otomatis saat `loading`.
+ * Tombol mockup: tinggi 44px, radius 10px, label 13px/700.
+ * Varian `outline` dan `dangerOutline` dipakai untuk aksi sekunder.
  */
 export default function AppButton({
   title,
@@ -64,6 +66,7 @@ export default function AppButton({
   icon = null,
   fullWidth = true,
   style,
+  textStyle,
   accessibilityLabel,
 }) {
   const palette = VARIANTS[variant] || VARIANTS.primary;
@@ -80,8 +83,8 @@ export default function AppButton({
       style={({ pressed }) => [
         styles.base,
         {
-          paddingVertical: sizing.paddingVertical,
           paddingHorizontal: sizing.paddingHorizontal,
+          minHeight: sizing.minHeight,
           backgroundColor: isDisabled
             ? palette.disabledBackground
             : pressed
@@ -96,21 +99,16 @@ export default function AppButton({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'primary' || variant === 'danger' ? colors.textInverse : colors.primary}
+          color={
+            variant === 'primary' || variant === 'danger'
+              ? colors.textInverse
+              : colors.primary
+          }
         />
       ) : (
         <View style={styles.content}>
           {icon ? <View style={styles.icon}>{icon}</View> : null}
-          <Text
-            style={[
-              styles.label,
-              {
-                fontSize: sizing.fontSize,
-                color: isDisabled ? colors.textSubtle : palette.text,
-              },
-            ]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.label, { color: isDisabled ? colors.textSubtle : palette.text }, textStyle]} numberOfLines={1}>
             {title}
           </Text>
         </View>
@@ -121,11 +119,10 @@ export default function AppButton({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: radius.md,
+    borderRadius: radius.button,
     borderWidth: borderWidth.hairline,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
   },
   fullWidth: {
     alignSelf: 'stretch',
@@ -139,6 +136,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   label: {
-    ...typography.bodyStrong,
+    ...typography.button,
   },
 });

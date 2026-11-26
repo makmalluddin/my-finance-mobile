@@ -1,5 +1,5 @@
 /**
- * Skala spacing 4pt. Gunakan token ini agar jarak antar layar konsisten.
+ * Skala spacing 4pt dan radius mengikuti mockup Fase 7B.
  */
 export const spacing = {
   xxs: 2,
@@ -16,10 +16,15 @@ export const spacing = {
 export const radius = {
   xs: 4,
   sm: 8,
-  md: 12,
+  md: 13,
   lg: 16,
   xl: 24,
   pill: 999,
+  input: 9,
+  badge: 5,
+  chip: 8,
+  tab: 9,
+  button: 10,
 };
 
 export const borderWidth = {
@@ -32,8 +37,8 @@ export const borderWidth = {
  * supaya seluruh layar memakai skala yang sama tanpa angka hard-coded.
  */
 export const layout = {
-  screenPadding: spacing.lg,
+  screenPadding: spacing.xl,
   screenBottomPadding: spacing.xxxl,
-  sectionGap: spacing.xl,
-  cardPadding: spacing.lg,
+  sectionGap: spacing.lg,
+  cardPadding: radius.md,
 };

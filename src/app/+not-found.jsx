@@ -1,32 +1,38 @@
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { AppButton, EmptyState, PageHeader, Screen } from '@/shared/components';
 import { spacing } from '@/shared/theme';
 
 export default function NotFoundScreen() {
   return (
     <Screen>
-      <PageHeader title="Halaman tidak ditemukan" />
-      <EmptyState
-        icon="compass-outline"
-        title="Rute tidak tersedia"
-        message="Alamat yang Anda tuju tidak ada di aplikasi ini."
-        action={
-          <View style={styles.action}>
-            <AppButton
-              title="Kembali ke Dashboard"
-              onPress={() => router.replace('/')}
-              fullWidth={false}
-            />
-          </View>
-        }
-      />
+      <PageHeader title="My Finance" />
+      <View style={styles.wrap}>
+        <EmptyState
+          icon="compass-outline"
+          title="Halaman tidak ditemukan"
+          message="Halaman yang Anda cari tidak tersedia."
+          action={
+            <View style={styles.action}>
+              <AppButton
+                title="Kembali ke Dashboard"
+                onPress={() => router.replace('/')}
+              />
+            </View>
+          }
+        />
+      </View>
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
+  wrap: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   action: {
+    alignSelf: 'stretch',
     marginTop: spacing.sm,
   },
-});
+};

@@ -29,13 +29,13 @@ export default function NotificationCard({
           <View
             style={[
               styles.iconWrap,
-              { backgroundColor: isIncome ? colors.successSoft : colors.warningSoft },
+              { backgroundColor: isIncome ? colors.successSoft : colors.dangerSoft },
             ]}
           >
             <Ionicons
-              name={isIncome ? 'arrow-down-circle-outline' : 'wallet-outline'}
-              size={20}
-              color={isIncome ? colors.success : colors.warning}
+              name={isIncome ? 'arrow-down-outline' : 'wallet-outline'}
+              size={18}
+              color={isIncome ? colors.success : colors.danger}
             />
           </View>
           <View style={styles.body}>
@@ -43,15 +43,16 @@ export default function NotificationCard({
               {notification.itemName}
             </Text>
             <Text style={styles.subtitle} numberOfLines={1}>
-              {isIncome ? 'Income' : 'Expense'} · {notification.pocketName}
-            </Text>
-            <Text style={styles.subtitle}>
-              Jadwal{' '}
-              {notification.scheduledFor
-                ? formatDateInTimeZone(notification.scheduledFor, timezone)
-                : '-'}
+              {isIncome ? 'Income' : 'Expense'}·{notification.pocketName}
             </Text>
           </View>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={styles.date}>
+            {notification.scheduledFor
+              ? formatDateInTimeZone(notification.scheduledFor, timezone)
+              : '-'}
+          </Text>
           <Text style={styles.amount}>{formatRupiah(notification.templateAmount)}</Text>
         </View>
       </Pressable>
@@ -60,7 +61,7 @@ export default function NotificationCard({
         <AppButton
           title="Tolak"
           size="sm"
-          variant="secondary"
+          variant="dangerOutline"
           onPress={() => onReject?.(notification.occurrenceId)}
           disabled={busy}
           style={styles.action}
@@ -79,6 +80,7 @@ export default function NotificationCard({
 
 const styles = StyleSheet.create({
   card: {
+    padding: spacing.md + 2,
     marginBottom: spacing.md,
   },
   pressed: {
@@ -89,28 +91,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.pill,
+    width: 37,
+    height: 37,
+    borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: spacing.md,
   },
   body: {
     flex: 1,
-    marginLeft: spacing.sm,
   },
   title: {
-    ...typography.bodyStrong,
+    ...typography.heading,
     color: colors.text,
   },
   subtitle: {
-    ...typography.caption,
+    ...typography.body,
+    color: colors.textMuted,
+    marginTop: spacing.xxs,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  date: {
+    ...typography.captionStrong,
     color: colors.textMuted,
   },
   amount: {
-    ...typography.bodyStrong,
+    ...typography.amountLarge,
     color: colors.text,
-    marginLeft: spacing.sm,
   },
   actions: {
     flexDirection: 'row',

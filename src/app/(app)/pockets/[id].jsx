@@ -17,6 +17,7 @@ import {
 } from '@/modules/pockets';
 import {
   AppButton,
+  Badge,
   Card,
   ConfirmDialog,
   EmptyState,
@@ -25,7 +26,7 @@ import {
   PageHeader,
   Screen,
 } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
 const ADD_LABEL = {
@@ -208,44 +209,57 @@ export default function PocketDetailScreen() {
         />
       }
     >
-      <Pressable
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Kembali ke daftar Pocket"
-        style={styles.backButton}
-        hitSlop={8}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.text} />
-        <Text style={styles.backText}>Pocket</Text>
-      </Pressable>
-
-      <PageHeader
-        title={pocket.name}
-        subtitle={pocket.description || 'Detail Pocket dan item-nya'}
-        right={
-          !pocket.isArchived ? (
-            <AppButton
-              title="Tambah"
-              size="sm"
-              fullWidth={false}
-              onPress={() => {
-                setEditingItem(null);
-                setItemFormVisible(true);
-              }}
-              disabled={busy}
-              style={styles.headerButton}
-            />
-          ) : null
-        }
-      />
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Kembali ke daftar Pocket"
+          style={styles.backButton}
+          hitSlop={8}
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
+        </Pressable>
+        <View style={styles.headerTitle}>
+          <Text style={styles.headerName} numberOfLines={1}>
+            {pocket.name}
+          </Text>
+          <Badge
+            label={pocket.isArchived ? 'Diarsipkan' : pocket.type}
+            tone={pocket.isArchived ? 'neutral' : pocket.type}
+          />
+        </View>
+        {!pocket.isArchived ? (
+          <AppButton
+            title="Tambah"
+            size="sm"
+            fullWidth={false}
+            onPress={() => {
+              setEditingItem(null);
+              setItemFormVisible(true);
+            }}
+            disabled={busy}
+            style={styles.headerButton}
+          />
+        ) : null}
+      </View>
 
       <ErrorBanner message={error} onDismiss={clearError} />
       <ErrorBanner message={automationError} onDismiss={clearAutomationError} />
       <ErrorBanner message={fundsError} onDismiss={clearFundsError} />
 
       <Card style={styles.infoCard}>
-        <Text style={styles.infoLabel}>Tipe Pocket</Text>
-        <Text style={styles.infoValue}>{pocket.type.toUpperCase()}</Text>
+        <View style={styles.infoHead}>
+          <View style={[styles.infoIcon, styles.infoIconExpense]}>
+            <Ionicons name="wallet-outline" size={18} color={colors.danger} />
+          </View>
+          <View style={styles.infoIdentity}>
+            <Text style={styles.infoTitle}>Info Pocket</Text>
+            <Text style={styles.infoType}>{pocket.type}</Text>
+          </View>
+        </View>
+        {pocket.description ? (
+          <Text style={styles.infoDescription}>{pocket.description}</Text>
+        ) : null}
         {pocket.type === 'transfer' && summary ? (
           <View style={styles.summaryRow}>
             <Text style={styles.summaryText}>Masuk {formatRupiah(summary.incoming)}</Text>
@@ -390,30 +404,64 @@ export default function PocketDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: spacing.xl,
   },
-  backText: {
-    ...typography.bodyStrong,
-    color: colors.text,
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    flex: 1,
     marginLeft: spacing.sm,
   },
+  headerName: {
+    ...typography.detailTitle,
+    color: colors.text,
+  },
   headerButton: {
-    minWidth: 90,
+    minWidth: 97,
+    paddingHorizontal: spacing.md,
   },
   infoCard: {
     marginBottom: spacing.lg,
   },
-  infoLabel: {
+  infoHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  infoIcon: {
+    width: 37,
+    height: 37,
+    borderRadius: radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md,
+  },
+  infoIconExpense: {
+    backgroundColor: colors.dangerSoft,
+  },
+  infoIdentity: {
+    flex: 1,
+  },
+  infoTitle: {
+    ...typography.subheading,
+    color: colors.text,
+  },
+  infoType: {
+    ...typography.body,
+    color: colors.textMuted,
+    marginTop: spacing.xxs,
+  },
+  infoDescription: {
     ...typography.caption,
     color: colors.textMuted,
-  },
-  infoValue: {
-    ...typography.bodyStrong,
-    color: colors.text,
-    marginTop: spacing.xxs,
+    marginTop: spacing.md,
   },
   summaryRow: {
     marginTop: spacing.md,
@@ -432,7 +480,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   sectionTitle: {
-    ...typography.subheading,
+    ...typography.heading,
     color: colors.text,
     marginBottom: spacing.sm,
   },

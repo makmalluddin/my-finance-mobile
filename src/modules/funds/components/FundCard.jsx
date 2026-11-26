@@ -1,12 +1,22 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Text, View } from 'react-native';
-import { AppButton, Card } from '@/shared/components';
+import { AppButton, Badge, Card } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
-const TYPE_LABELS = {
-  active: 'Active',
-  savings_goal: 'Savings/Goal',
+const TYPE_META = {
+  active: { label: 'Active', tone: 'active' },
+  savings_goal: { label: 'Savings/Goal', tone: 'transfer' },
 };
+
+function DetailRow({ label, value, negative = false }) {
+  return (
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={[styles.detailValue, negative && styles.negative]}>{value}</Text>
+    </View>
+  );
+}
 
 /**
  * Kartu Fund menampilkan saldo hasil perhitungan database, bukan saldo cache.
@@ -20,26 +30,35 @@ export default function FundCard({
   onDelete,
 }) {
   const balance = fund.balance ?? fund.openingBalance ?? 0;
+  const meta = TYPE_META[fund.fundType] ?? {
+    label: fund.fundType,
+    tone: 'neutral',
+  };
 
   return (
-    <Card style={[styles.card, fund.isArchived && styles.archived]} tone={fund.isArchived ? 'muted' : 'default'}>
+    <Card style={styles.card}>
       <View style={styles.header}>
+        <View style={styles.iconWrap}>
+          <Ionicons name="wallet-outline" size={18} color={colors.primary} />
+        </View>
         <View style={styles.identity}>
-          <Text style={styles.name}>{fund.name}</Text>
+          <Text style={styles.name} numberOfLines={1}>
+            {fund.name}
+          </Text>
           <View style={styles.badges}>
-            <Text style={styles.typeBadge}>{TYPE_LABELS[fund.fundType] ?? fund.fundType}</Text>
-            {fund.isArchived ? <Text style={styles.archiveBadge}>Arsip</Text> : null}
+            <Badge label={meta.label} tone={meta.tone} />
+            {fund.isArchived ? <Badge label="Diarsipkan" tone="neutral" /> : null}
           </View>
         </View>
-        <Text style={[styles.balance, balance < 0 && styles.negative]}>{formatRupiah(balance)}</Text>
       </View>
 
-      <Text style={styles.opening}>Opening Balance: {formatRupiah(fund.openingBalance)}</Text>
+      <DetailRow label="Saldo" value={formatRupiah(balance)} negative={balance < 0} />
+      <DetailRow label="Saldo awal" value={formatRupiah(fund.openingBalance)} />
 
       <View style={styles.actions}>
         <AppButton
-          title="Ubah"
-          variant="secondary"
+          title="Edit"
+          variant="outline"
           size="sm"
           onPress={() => onEdit?.(fund)}
           disabled={busy}
@@ -48,7 +67,7 @@ export default function FundCard({
         {fund.isArchived ? (
           <AppButton
             title="Aktifkan"
-            variant="secondary"
+            variant="outline"
             size="sm"
             onPress={() => onUnarchive?.(fund)}
             disabled={busy}
@@ -57,7 +76,7 @@ export default function FundCard({
         ) : (
           <AppButton
             title="Arsipkan"
-            variant="secondary"
+            variant="outline"
             size="sm"
             onPress={() => onArchive?.(fund)}
             disabled={busy}
@@ -66,7 +85,7 @@ export default function FundCard({
         )}
         <AppButton
           title="Hapus"
-          variant="ghost"
+          variant="dangerOutline"
           size="sm"
           onPress={() => onDelete?.(fund)}
           disabled={busy}
@@ -81,64 +100,55 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: spacing.md,
   },
-  archived: {
-    opacity: 0.85,
-  },
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  iconWrap: {
+    width: 37,
+    height: 37,
+    borderRadius: radius.tab,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md,
   },
   identity: {
     flex: 1,
-    paddingRight: spacing.md,
   },
   name: {
     ...typography.subheading,
     color: colors.text,
+    marginBottom: spacing.xs,
   },
   badges: {
     flexDirection: 'row',
-    marginTop: spacing.xs,
   },
-  typeBadge: {
-    ...typography.caption,
-    color: colors.primary,
-    backgroundColor: colors.primarySoft,
-    borderRadius: radius.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    overflow: 'hidden',
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
   },
-  archiveBadge: {
+  detailLabel: {
     ...typography.caption,
     color: colors.textMuted,
-    backgroundColor: colors.surfaceMuted,
-    borderRadius: radius.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    marginLeft: spacing.xs,
-    overflow: 'hidden',
   },
-  balance: {
+  detailValue: {
     ...typography.bodyStrong,
-    color: colors.success,
-    textAlign: 'right',
+    fontWeight: '700',
+    color: colors.text,
   },
   negative: {
     color: colors.danger,
-  },
-  opening: {
-    ...typography.caption,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
   },
   actions: {
     flexDirection: 'row',
     marginTop: spacing.md,
   },
   action: {
-    flex: 1,
-    marginHorizontal: 2,
+    minWidth: 60,
+    marginRight: spacing.sm,
   },
 });

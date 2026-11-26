@@ -1,6 +1,6 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import { useCategories } from '@/modules/categories';
 import { useFunds } from '@/modules/funds';
 import {
@@ -110,7 +110,6 @@ export default function TransactionsScreen() {
     >
       <PageHeader
         title="Transaksi"
-        subtitle="Riwayat Income, Expense, dan Transfer"
         right={
           <AppButton
             title="Tambah"
@@ -127,7 +126,7 @@ export default function TransactionsScreen() {
       <ErrorBanner message={fundsError} onDismiss={clearFundsError} />
       <ErrorBanner message={categoriesError} onDismiss={clearCategoriesError} />
 
-      <Card style={styles.filterCard}>
+      <View style={styles.filterRow}>
         <SelectField
           label="Jenis"
           value={filters.type}
@@ -140,9 +139,9 @@ export default function TransactionsScreen() {
           value={filters.range}
           options={RANGE_OPTIONS}
           onChange={(range) => setFilters((current) => ({ ...current, range }))}
-          containerStyle={styles.filterField}
+          containerStyle={[styles.filterField, styles.filterFieldLast]}
         />
-      </Card>
+      </View>
 
       {loading && transactions.length === 0 ? (
         <LoadingState message="Memuat riwayat transaksi..." />
@@ -210,14 +209,21 @@ export default function TransactionsScreen() {
 
 const styles = StyleSheet.create({
   headerButton: {
-    minWidth: 90,
+    minWidth: 97,
+    paddingHorizontal: spacing.md,
     marginTop: spacing.xxs,
   },
-  filterCard: {
+  filterRow: {
+    flexDirection: 'row',
     marginBottom: spacing.lg,
   },
   filterField: {
-    marginBottom: spacing.sm,
+    flex: 1,
+    marginBottom: spacing.xs,
+    marginRight: spacing.xl,
+  },
+  filterFieldLast: {
+    marginRight: 0,
   },
   createButton: {
     minWidth: 180,

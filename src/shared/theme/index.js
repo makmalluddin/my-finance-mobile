@@ -9,19 +9,20 @@ export { colors, spacing, radius, borderWidth, layout, typography };
  * `shadow*`. Keduanya aman untuk React Native 0.88.
  */
 export const shadows = {
+  // Kartu mockup datar: hanya border, tanpa bayangan.
   card: {
     shadowColor: colors.shadow,
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
   },
   floating: {
     shadowColor: colors.shadow,
-    shadowOpacity: 0.18,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 8,
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
   },
 };
 
