@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors, radius, shadows, spacing, borderWidth } from '../theme';
+import { colors, radius, shadows, layout, borderWidth } from '../theme';
 
 /**
  * Kartu konten. Jika `onPress` diberikan, kartu menjadi pressable.
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   padded: {
-    padding: spacing.lg,
+    padding: layout.cardPadding,
   },
   pressed: {
     backgroundColor: colors.surfaceMuted,

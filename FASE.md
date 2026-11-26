@@ -1,7 +1,7 @@
 # Rencana Fase Pengerjaan Proyek
 
 **Proyek:** Personal Finance Tracking (Expo SDK 58 + React Native 0.88.1 + Supabase lokal)
-**Status dokumen:** Disetujui — Fase 6 selesai diverifikasi manual dan disetujui; Fase 7 finalisasi sedang dikerjakan
+**Status dokumen:** Disetujui — Fase 6 dan Fase 7A selesai diverifikasi manual dan disetujui; Fase 7B belum dimulai
 **Dibuat:** 22 November 2026
 
 > Catatan lokasi: dokumentasi proyek berada di `docs/` di root repository, bukan di
@@ -260,9 +260,9 @@ Automation dan Notification end-to-end di perangkat/emulator; laporan fase diset
   mengubah jadwal/detail dan menghapus Automation. Transfer tidak menampilkan opsi Automation.
 - `AutomationScheduler` memproses jadwal saat aplikasi dibuka dan saat AppState kembali `active`,
   dengan guard in-flight dan kegagalan yang tidak mengganggu aplikasi.
-- Tab Notifikasi menampilkan badge dari store bersama; kartu persisten dapat dikonfirmasi atau
-  ditolak. Income memakai nominal template dan menampilkan peringatan permanen; Expense dapat
-  menyesuaikan nominal occurrence.
+- Badge Notifikasi dari store bersama kini tampil pada tombol lonceng di Dashboard (Amandemen 7A);
+  kartu persisten dapat dikonfirmasi atau ditolak. Income memakai nominal template dan menampilkan
+  peringatan permanen; Expense dapat menyesuaikan nominal occurrence.
 - Perbaikan UI: `loadingFunds` tidak lagi mengunci tombol dialog Notifikasi; refresh `silent`
   pada `useFunds` tetap menyelesaikan status loading.
 - Verifikasi otomatis: `npx expo lint` bersih, Jest 62/62, `npx supabase test db` 406/406,
@@ -313,8 +313,47 @@ build tanpa menyentuh production/cloud.
   dan grafik Expense.
 - Verifikasi otomatis: `npx expo lint` bersih, Jest 69/69, `npx supabase test db` 406/406,
   `npx expo-doctor` 20/20, dan `npx expo export --platform android` berhasil.
-- Belum dieksekusi: perubahan status dokumen menjadi Accepted, konfigurasi EAS development,
-  dan build cloud — menunggu regresi manual penuh dan persetujuan pengguna.
+
+### Fase 7A — Tema, Layout & Navigasi
+
+**Status:** Selesai; verifikasi manual di perangkat dinyatakan lulus oleh pengguna.
+
+**Sifat perubahan:** UI-only. Tidak menyentuh AppServices, repository, RPC, migration, schema,
+atau logika finansial.
+
+#### Cakupan
+
+- Token tema dirapikan: `radius.xs`, `layout` (`screenPadding`, `screenBottomPadding`,
+  `sectionGap`, `cardPadding`), serta `typography.captionStrong`, `typography.button`, dan
+  `typography.brand`. Jumlah token warna tetap 28 — tidak ada warna baru.
+- Radius, jarak, font, dan border yang sebelumnya hard-coded dinormalisasi ke token pada komponen
+  bersama dan kartu modul.
+- **Amandemen 7A — navigasi:** tab menjadi 5 (Dashboard, Transaksi, Pocket, Fund, Pengaturan).
+  Halaman Notifikasi diakses dari tombol lonceng 44×44 di header kanan Dashboard, bukan dari tab.
+- Rute `notifications` tetap navigable, tetapi tombol tab disembunyikan dengan
+  `tabBarButton: () => null`, `tabBarItemStyle: { display: 'none', flex: 0, width: 0 }`, dan
+  `tabBarStyle: { display: 'none' }`. Opsi `href: null` tidak dipakai karena pada Expo Router SDK 58
+  opsi itu diterjemahkan menjadi `hidden: true` yang me-redirect halaman ke Dashboard.
+- Badge jumlah notifikasi dipindah dari tab ke tombol Dashboard. Halaman Notifikasi memakai tombol
+  back `router.back()` mengikuti pola Detail Pocket. Logika confirm/reject tidak diubah.
+
+#### Verifikasi
+
+- Gate otomatis: `npx expo lint` bersih, `npm test` 69/69, `npx expo-doctor` 20/20,
+  `npx supabase test db` 406/406.
+- Smoke Playwright (viewport 390px): tombol lonceng membuka `/notifications`, tab bar tidak tampil
+  di halaman Notifikasi, tombol back kembali ke `/`, kelima tab memenuhi lebar layar tanpa slot
+  kosong, dan 0 console error aplikasi. Screenshot:
+  `/tmp/opencode/ui/page-2026-11-26T13-59-18-447Z.png`.
+- Verifikasi manual di perangkat lulus: badge/notifikasi, masuk ke Notifikasi, tab bar tersembunyi,
+  tombol back, lima tab rapi, serta dialog Tolak/Konfirmasi masih berfungsi. Matriks UI-001–UI-006
+  tersedia di `docs/testing.md` bagian 11.
+
+### Fase 7B — Belum dieksekusi
+
+Menunggu persetujuan eksplisit. Rencana: detail UI lanjutan, regresi penuh matriks manual,
+perubahan status dokumen menjadi Accepted, dan persiapan EAS development — tanpa build cloud
+sampai diizinkan.
 
 ### Risiko residual
 
@@ -359,7 +398,7 @@ Tidak termasuk MVP lokal. Dilaksanakan hanya setelah Fase 7 disetujui.
 ## 10. Urutan gate ringkas
 
 ```text
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 ✅ → Fase 6 (implementasi ✅, verifikasi manual pending) → Fase 7 → (Fase 8 opsional)
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 ✅ → Fase 6 ✅ → Fase 7A ✅ → Fase 7B (belum dimulai) → (Fase 8 opsional)
 ```
 
 Setiap panah memerlukan persetujuan pengguna sebelum dieksekusi.

@@ -1,8 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { AutomationScheduler } from '@/modules/automation';
-import { useNotifications } from '@/modules/notifications';
-import { colors, typography } from '@/shared/theme';
+import { colors, spacing, typography } from '@/shared/theme';
 
 const TABS = [
   {
@@ -24,12 +23,6 @@ const TABS = [
     iconOutline: 'albums-outline',
   },
   {
-    name: 'notifications',
-    title: 'Notifikasi',
-    icon: 'notifications',
-    iconOutline: 'notifications-outline',
-  },
-  {
     name: 'funds',
     title: 'Fund',
     icon: 'wallet',
@@ -44,9 +37,6 @@ const TABS = [
 ];
 
 export default function AppLayout() {
-  const { notifications } = useNotifications();
-  const badge = notifications.length > 0 ? String(notifications.length) : undefined;
-
   return (
     <>
       <AutomationScheduler />
@@ -58,11 +48,10 @@ export default function AppLayout() {
           tabBarStyle: {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingTop: 4,
+            paddingTop: spacing.xs,
           },
           tabBarLabelStyle: {
-            ...typography.caption,
-            fontWeight: '600',
+            ...typography.captionStrong,
           },
         }}
       >
@@ -72,7 +61,6 @@ export default function AppLayout() {
             name={tab.name}
             options={{
               title: tab.title,
-              tabBarBadge: tab.name === 'notifications' ? badge : undefined,
               tabBarIcon: ({ color, size, focused }) => (
                 <Ionicons
                   name={focused ? tab.icon : tab.iconOutline}
@@ -83,6 +71,14 @@ export default function AppLayout() {
             }}
           />
         ))}
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none', flex: 0, width: 0 },
+            tabBarStyle: { display: 'none' },
+          }}
+        />
       </Tabs>
     </>
   );

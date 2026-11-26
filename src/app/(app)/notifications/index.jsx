@@ -1,6 +1,7 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, RefreshControl, StyleSheet, Text } from 'react-native';
 import { automationService } from '@/appservices/automation/automationService';
 import { useFunds } from '@/modules/funds';
 import {
@@ -15,6 +16,7 @@ import {
   PageHeader,
   Screen,
 } from '@/shared/components';
+import { colors, spacing, typography } from '@/shared/theme';
 
 /**
  * Daftar kartu konfirmasi Automation. Semua aksi mengubah occurrence di
@@ -82,6 +84,17 @@ export default function NotificationsScreen() {
     <Screen
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshAll} />}
     >
+      <Pressable
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel="Kembali ke Dashboard"
+        hitSlop={8}
+        style={styles.backButton}
+      >
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+        <Text style={styles.backText}>Dashboard</Text>
+      </Pressable>
+
       <PageHeader
         title="Notifikasi"
         subtitle="Konfirmasi jadwal Income dan Expense yang sudah jatuh tempo."
@@ -126,3 +139,16 @@ export default function NotificationsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  backText: {
+    ...typography.bodyStrong,
+    color: colors.text,
+    marginLeft: spacing.sm,
+  },
+});

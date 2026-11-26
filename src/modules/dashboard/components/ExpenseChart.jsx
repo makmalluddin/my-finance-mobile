@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 import { formatDate, fromDateKey, MONTHS_SHORT } from '@/shared/utils/date';
 
@@ -80,14 +80,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   bar: {
-    borderRadius: 4,
+    borderRadius: radius.xs,
     minHeight: 2,
   },
   label: {
     ...typography.caption,
     color: colors.textMuted,
     marginTop: spacing.xs,
-    fontSize: 10,
   },
   footer: {
     flexDirection: 'row',

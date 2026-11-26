@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     maxWidth: 420,
     maxHeight: '85%',
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     padding: spacing.lg,
   },
   title: {

@@ -9,8 +9,9 @@ import {
 } from './notificationStore';
 
 /**
- * State notifikasi yang dipakai bersama layar Notifikasi, badge tab, dan
- * scheduler. Scheduler memperbarui store sehingga semua tampilan sinkron.
+ * State notifikasi yang dipakai bersama layar Notifikasi, tombol Notifikasi
+ * di Dashboard, dan scheduler. Scheduler memperbarui store sehingga semua
+ * tampilan sinkron.
  */
 export function useNotifications() {
   const [notifications, setNotifications] = useState(getPendingNotifications());

@@ -75,7 +75,7 @@ const styles = {
   detail: {
     ...typography.caption,
     color: colors.textMuted,
-    marginTop: spacing.xxs ?? 2,
+    marginTop: spacing.xxs,
   },
   actions: {
     flexDirection: 'row',

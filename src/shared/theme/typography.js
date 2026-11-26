@@ -48,4 +48,21 @@ export const typography = {
     lineHeight: 34,
     fontWeight: '700',
   },
+  captionStrong: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+  },
+  button: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+  },
+  brand: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
 };

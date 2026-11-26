@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { AppButton, Card } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
 const TYPE_LABELS = {
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.primary,
     backgroundColor: colors.primarySoft,
-    borderRadius: 6,
+    borderRadius: radius.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     overflow: 'hidden',
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textMuted,
     backgroundColor: colors.surfaceMuted,
-    borderRadius: 6,
+    borderRadius: radius.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     marginLeft: spacing.xs,

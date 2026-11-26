@@ -1,6 +1,6 @@
 import { forwardRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, radius, spacing, borderWidth, typography } from '../theme';
 
 /**
  * Input teks dengan label, pesan bantuan, dan pesan error.
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.border,
   },
   fieldMultiline: {

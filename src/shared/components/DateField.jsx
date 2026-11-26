@@ -11,7 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { colors, radius, shadows, spacing, typography } from '../theme';
+import { colors, radius, shadows, spacing, borderWidth, typography } from '../theme';
 import { formatDate } from '../utils/date';
 import AppButton from './AppButton';
 
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.border,
   },
   fieldPressed: {

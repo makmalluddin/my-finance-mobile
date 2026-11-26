@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 import { formatDate, occurredAtToDateKey } from '@/shared/utils/date';
 
@@ -142,8 +142,8 @@ export default function PocketItemList({ items = [], funds = [], busy = false, a
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
   },

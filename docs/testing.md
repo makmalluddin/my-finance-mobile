@@ -1,9 +1,9 @@
 # TESTING DOCUMENT
 ## Personal Finance Tracking Application
 
-**Document Version:** 0.2  
-**Document Status:** Draft — revisi Fase 0 (penyelarasan aturan Active Fund)  
-**Last Updated:** 21 November 2026  
+**Document Version:** 0.3  
+**Document Status:** Draft — ditambah matriks manual Fase 7A (sudah diverifikasi)  
+**Last Updated:** 26 November 2026  
 **Platform:** Android (MVP)
 
 ---
@@ -309,7 +309,21 @@ Dokumen ini hanya memuat kondisi/input pengujian dan hasil yang diharapkan. Defi
 | INT-009 | Menghapus Automation dengan transaksi yang telah dibuat | Automation dan occurrence terkait dihapus | Transaksi aktual tetap dipertahankan |
 | INT-010 | Menjaga konsistensi setelah perubahan transaksi | Transaksi diedit atau dihapus | Perhitungan saldo Fund dan Dashboard mencerminkan data transaksi terbaru |
 
+# 11. Fase 7A — UI, Tema & Navigasi
+
+Skenario berikut menguji hasil Fase 7A dan Amandemen 7A (UI-only). Notifikasi diakses dari tombol
+lonceng di Dashboard, bukan dari tab.
+
+| ID | Test Scenario | Input / Condition | Expected Result |
+|---|---|---|---|
+| UI-001 | Membuka Notifikasi dari Dashboard | Pengguna menekan tombol lonceng di header kanan Dashboard | Halaman Notifikasi terbuka dan tab bar tidak ditampilkan |
+| UI-002 | Badge Notifikasi | Terdapat occurrence pending; kemudian semua notifikasi selesai | Angka badge sesuai jumlah notifikasi pending dan badge hilang bila tidak ada notifikasi |
+| UI-003 | Kembali dari Notifikasi | Pengguna menekan tombol back di halaman Notifikasi | Kembali ke Dashboard |
+| UI-004 | Navigasi tab | Pengguna membuka aplikasi | Hanya lima tab: Dashboard, Transaksi, Pocket, Fund, Pengaturan; tidak ada slot kosong |
+| UI-005 | Dialog Notifikasi | Notifikasi pending tersedia; pengguna memilih Tolak atau Konfirmasi | Dialog tetap berfungsi seperti sebelum Fase 7A |
+| UI-006 | Konsistensi visual | Pengguna meninjau seluruh layar setelah perubahan tema | Radius, jarak, dan tipografi mengikuti token; tidak ada warna baru |
+
 ---
 
-**Document Status:** Draft untuk direview.  
+**Document Status:** Draft untuk direview; UI-001–UI-006 sudah diverifikasi manual dan dinyatakan lulus.  
 Seluruh skenario di atas merupakan acuan pengujian berdasarkan keputusan produk dan desain teknis yang telah didokumentasikan. Skenario yang memerlukan aturan yang belum diputuskan harus menunggu keputusan pada dokumen sumber sebelum dijadikan kriteria lulus/gagal final.

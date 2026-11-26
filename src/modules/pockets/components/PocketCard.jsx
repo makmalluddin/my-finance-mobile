@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 
 const TYPE_META = {
@@ -105,8 +105,8 @@ export default function PocketCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     padding: spacing.md,
     marginBottom: spacing.md,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.sm,

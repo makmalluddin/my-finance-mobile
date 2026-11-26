@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../theme';
+import { colors, layout, spacing, typography } from '../theme';
 
 /**
  * Judul layar dengan subjudul opsional dan slot aksi di kanan.
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: spacing.xl,
+    marginBottom: layout.sectionGap,
   },
   text: {
     flex: 1,

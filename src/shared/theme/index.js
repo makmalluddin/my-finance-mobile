@@ -1,8 +1,8 @@
 import { colors } from './colors';
-import { spacing, radius, borderWidth } from './spacing';
+import { spacing, radius, borderWidth, layout } from './spacing';
 import { typography } from './typography';
 
-export { colors, spacing, radius, borderWidth, typography };
+export { colors, spacing, radius, borderWidth, layout, typography };
 
 /**
  * Shadow ringan untuk kartu. Android memakai `elevation`, iOS memakai
@@ -30,6 +30,7 @@ export const theme = {
   spacing,
   radius,
   borderWidth,
+  layout,
   typography,
   shadows,
 };

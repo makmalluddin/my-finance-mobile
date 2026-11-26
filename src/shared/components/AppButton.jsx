@@ -1,5 +1,5 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { colors, radius, spacing, borderWidth, typography } from '../theme';
 
 const VARIANTS = {
   primary: {
@@ -36,17 +36,17 @@ const SIZES = {
   sm: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    fontSize: 14,
+    fontSize: typography.button.fontSize,
   },
   md: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    fontSize: 15,
+    fontSize: typography.body.fontSize,
   },
   lg: {
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
-    fontSize: 16,
+    fontSize: typography.subheading.fontSize,
   },
 };
 
@@ -122,7 +122,7 @@ export default function AppButton({
 const styles = StyleSheet.create({
   base: {
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: borderWidth.hairline,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 44,

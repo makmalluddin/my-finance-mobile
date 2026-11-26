@@ -131,11 +131,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   brand: {
-    ...typography.caption,
+    ...typography.brand,
     color: colors.primary,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
     marginBottom: spacing.sm,
   },
   title: {

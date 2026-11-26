@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Text, View } from 'react-native';
 import { AppButton } from '@/shared/components';
-import { colors, spacing, typography } from '@/shared/theme';
+import { colors, radius, spacing, borderWidth, typography } from '@/shared/theme';
 import { formatRupiah } from '@/shared/utils/currency';
 import { fromDateKey, MONTHS_SHORT, occurredAtToDateKey } from '@/shared/utils/date';
 
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
   },
   groupCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.sm,
