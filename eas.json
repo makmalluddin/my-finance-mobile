@@ -1,0 +1,14 @@
+{
+  "build": {
+    "production": {
+      "environment": "production"
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}

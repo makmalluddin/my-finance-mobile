@@ -1,0 +1,3 @@
+-- seed.sql
+-- Seed produksi tidak menambahkan data keuangan pengguna. System Category
+-- sudah di-seed secara idempoten oleh migration 0007_seed_categories.sql.
