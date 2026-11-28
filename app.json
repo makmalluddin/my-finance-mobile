@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.myfinance.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -26,6 +27,17 @@
       "@react-native-community/datetimepicker",
       "expo-font",
       "expo-sqlite"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "528f32c1-f116-4094-b3b6-05466828e7f1"
+      }
+    },
+    "owner": "makmalluddin"
   }
 }
