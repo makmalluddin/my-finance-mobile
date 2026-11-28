@@ -44,3 +44,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# document 
+flowchart-img.png
+flowchart.drawio
