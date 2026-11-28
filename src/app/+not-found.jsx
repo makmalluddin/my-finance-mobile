@@ -6,7 +6,7 @@ import { spacing } from '@/shared/theme';
 export default function NotFoundScreen() {
   return (
     <Screen>
-      <PageHeader title="My Finance" />
+      <PageHeader title="Udin's" />
       <View style={styles.wrap}>
         <EmptyState
           icon="compass-outline"

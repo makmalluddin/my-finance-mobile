@@ -1,8 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AutomationScheduler } from '@/modules/automation';
 import { colors, radius, spacing, typography } from '@/shared/theme';
+
+const TAB_BAR_BASE_HEIGHT = 65;
 
 const TABS = [
   { name: 'index', title: 'Dashboard', icon: 'home', iconOutline: 'home-outline' },
@@ -23,6 +26,8 @@ const TABS = [
 ];
 
 export default function AppLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <AutomationScheduler />
@@ -31,7 +36,10 @@ export default function AppLayout() {
           headerShown: false,
           tabBarActiveTintColor: colors.primaryPressed,
           tabBarInactiveTintColor: colors.tabInactive,
-          tabBarStyle: styles.tabBar,
+          tabBarStyle: {
+            ...styles.tabBar,
+            height: TAB_BAR_BASE_HEIGHT + insets.bottom,
+          },
           tabBarItemStyle: styles.tabItem,
           tabBarLabel: ({ focused, children }) => (
             <Text
@@ -79,9 +87,7 @@ export default function AppLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 65,
     paddingTop: spacing.sm + 1,
-    paddingBottom: 0,
     backgroundColor: colors.surface,
     borderWidth: 0,
     borderTopWidth: 1,

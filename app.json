@@ -1,22 +1,21 @@
 {
   "expo": {
-    "name": "my-finance-mobile",
+    "name": "Udin's",
     "slug": "my-finance-mobile",
     "scheme": "myfinance",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/investment.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "package": "com.myfinance.mobile",
+      "versionCode": 5,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/investment.png",
+        "monochromeImage": "./assets/investment.png"
       }
     },
     "web": {

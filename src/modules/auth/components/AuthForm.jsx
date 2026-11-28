@@ -58,7 +58,7 @@ export default function AuthForm({ mode }) {
             <View style={styles.logo}>
               <Ionicons name="wallet-outline" size={22} color={colors.textInverse} />
             </View>
-            <Text style={styles.brand}>My Finance</Text>
+            <Text style={styles.brand}>{"Udin's"}</Text>
           </View>
           <Text style={styles.title}>{isSignUp ? 'Buat akun' : 'Selamat datang'}</Text>
           <Text style={styles.subtitle}>
