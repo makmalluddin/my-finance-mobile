@@ -1,5 +1,6 @@
 import { authService } from '@/appservices/auth/authService';
 import { authRepository } from '@/data/repositories/authRepository';
+import { loginHistoryRepository } from '@/data/repositories/loginHistoryRepository';
 import { toAppError } from '@/shared/utils/errors';
 
 jest.mock('@/data/repositories/authRepository', () => ({
@@ -11,6 +12,15 @@ jest.mock('@/data/repositories/authRepository', () => ({
     signOut: jest.fn(),
     updateUser: jest.fn(),
     onAuthStateChange: jest.fn(),
+  },
+}));
+
+jest.mock('@/data/repositories/loginHistoryRepository', () => ({
+  loginHistoryRepository: {
+    list: jest.fn(),
+    remember: jest.fn(),
+    remove: jest.fn(),
+    clear: jest.fn(),
   },
 }));
 
@@ -127,6 +137,73 @@ describe('authService', () => {
     await expect(authService.updateDisplayName('Nadia')).rejects.toMatchObject({
       code: 'NETWORK_ERROR',
     });
+  });
+});
+
+describe('authService — riwayat email login', () => {
+  test('signIn berhasil menyimpan email yang sudah dinormalkan', async () => {
+    authRepository.signIn.mockResolvedValue({
+      data: { session: { access_token: 'token' } },
+      error: null,
+    });
+
+    await authService.signIn({ email: '  User@Example.COM ', password: 'rahasia' });
+
+    expect(loginHistoryRepository.remember).toHaveBeenCalledWith('user@example.com');
+  });
+
+  test('signIn gagal tidak menyimpan riwayat', async () => {
+    authRepository.signIn.mockResolvedValue({
+      data: null,
+      error: { message: 'Invalid login credentials' },
+    });
+
+    await expect(
+      authService.signIn({ email: 'user@example.com', password: 'salah' })
+    ).rejects.toMatchObject({ code: 'INVALID_CREDENTIALS' });
+    expect(loginHistoryRepository.remember).not.toHaveBeenCalled();
+  });
+
+  test('signIn tetap berhasil walau penyimpanan riwayat gagal', async () => {
+    authRepository.signIn.mockResolvedValue({
+      data: { session: { access_token: 'token' } },
+      error: null,
+    });
+    loginHistoryRepository.remember.mockRejectedValue(new Error('storage error'));
+
+    await expect(
+      authService.signIn({ email: 'user@example.com', password: 'rahasia' })
+    ).resolves.toMatchObject({ session: { access_token: 'token' } });
+  });
+
+  test('signUp tidak menyimpan riwayat', async () => {
+    authRepository.signUp.mockResolvedValue({ data: { user: {} }, error: null });
+
+    await authService.signUp({ email: 'user@example.com', password: 'rahasia123' });
+
+    expect(loginHistoryRepository.remember).not.toHaveBeenCalled();
+  });
+
+  test('listLoginHistory diteruskan ke repository', async () => {
+    const entries = [{ email: 'user@example.com', lastUsedAt: '2026-11-28T00:00:00.000Z' }];
+    loginHistoryRepository.list.mockResolvedValue(entries);
+
+    await expect(authService.listLoginHistory()).resolves.toEqual(entries);
+  });
+
+  test('removeLoginEmail menormalkan email sebelum menghapus', async () => {
+    loginHistoryRepository.remove.mockResolvedValue([]);
+
+    await authService.removeLoginEmail('  User@Example.COM  ');
+
+    expect(loginHistoryRepository.remove).toHaveBeenCalledWith('user@example.com');
+  });
+
+  test('clearLoginHistory diteruskan ke repository', async () => {
+    loginHistoryRepository.clear.mockResolvedValue([]);
+
+    await expect(authService.clearLoginHistory()).resolves.toEqual([]);
+    expect(loginHistoryRepository.clear).toHaveBeenCalledTimes(1);
   });
 });
 

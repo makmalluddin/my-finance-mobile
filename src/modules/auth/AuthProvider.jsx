@@ -12,6 +12,18 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [loginHistory, setLoginHistory] = useState([]);
+
+  const refreshLoginHistory = useCallback(async () => {
+    try {
+      const history = await authService.listLoginHistory();
+      setLoginHistory(history);
+      return history;
+    } catch {
+      setLoginHistory([]);
+      return [];
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -42,17 +54,25 @@ export function AuthProvider({ children }) {
         }
       });
 
+    // Riwayat hanya pelengkap UI. Dimuat di microtask agar tidak memicu
+    // setState sinkron di dalam effect body.
+    void Promise.resolve().then(refreshLoginHistory);
+
     return () => {
       active = false;
       unsubscribe?.();
     };
-  }, []);
+  }, [refreshLoginHistory]);
 
-  const signIn = useCallback(async (credentials) => {
-    const data = await authService.signIn(credentials);
-    setSession(data?.session ?? null);
-    return data;
-  }, []);
+  const signIn = useCallback(
+    async (credentials) => {
+      const data = await authService.signIn(credentials);
+      setSession(data?.session ?? null);
+      await refreshLoginHistory();
+      return data;
+    },
+    [refreshLoginHistory]
+  );
 
   const signUp = useCallback(async (credentials) => {
     const data = await authService.signUp(credentials);
@@ -77,6 +97,18 @@ export function AuthProvider({ children }) {
     return updatedUser;
   }, []);
 
+  const removeLoginEmail = useCallback(async (email) => {
+    const next = await authService.removeLoginEmail(email);
+    setLoginHistory(next);
+    return next;
+  }, []);
+
+  const clearLoginHistory = useCallback(async () => {
+    const next = await authService.clearLoginHistory();
+    setLoginHistory(next);
+    return next;
+  }, []);
+
   const displayName = useMemo(() => getDisplayName(session?.user), [session]);
 
   const value = useMemo(
@@ -86,19 +118,27 @@ export function AuthProvider({ children }) {
       displayName,
       isAuthenticated: Boolean(session?.user),
       isReady,
+      loginHistory,
       signIn,
       signUp,
       signOut,
       updateDisplayName,
+      refreshLoginHistory,
+      removeLoginEmail,
+      clearLoginHistory,
     }),
     [
       session,
       displayName,
       isReady,
+      loginHistory,
       signIn,
       signUp,
       signOut,
       updateDisplayName,
+      refreshLoginHistory,
+      removeLoginEmail,
+      clearLoginHistory,
     ]
   );
 

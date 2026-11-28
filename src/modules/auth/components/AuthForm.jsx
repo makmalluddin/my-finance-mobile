@@ -6,6 +6,7 @@ import { AppButton, ErrorBanner, Screen, TextField } from '@/shared/components';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 import { toAppError } from '@/shared/utils/errors';
 import { useAuth } from '../AuthProvider';
+import EmailSuggestionsModal from './EmailSuggestionsModal';
 
 /**
  * Form masuk dan pendaftaran. Keduanya memakai layanan Auth yang sama,
@@ -13,13 +14,20 @@ import { useAuth } from '../AuthProvider';
  */
 export default function AuthForm({ mode }) {
   const isSignUp = mode === 'sign-up';
-  const { signIn, signUp } = useAuth();
+  const {
+    signIn,
+    signUp,
+    loginHistory,
+    removeLoginEmail,
+    clearLoginHistory,
+  } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
   const passwordRef = useRef(null);
 
   const handleSubmit = async () => {
@@ -45,6 +53,26 @@ export default function AuthForm({ mode }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEmailFocus = () => {
+    if (!isSignUp) {
+      setShowEmailSuggestions(true);
+    }
+  };
+
+  const handleSelectEmail = (selectedEmail) => {
+    setEmail(selectedEmail);
+    setShowEmailSuggestions(false);
+    passwordRef.current?.focus();
+  };
+
+  const handleRemoveEmail = async (removedEmail) => {
+    await removeLoginEmail(removedEmail);
+  };
+
+  const handleClearHistory = async () => {
+    await clearLoginHistory();
   };
 
   return (
@@ -75,6 +103,7 @@ export default function AuthForm({ mode }) {
           label="Email"
           value={email}
           onChangeText={setEmail}
+          onFocus={handleEmailFocus}
           placeholder="nama@contoh.com"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -122,6 +151,18 @@ export default function AuthForm({ mode }) {
           </Link>
         </View>
       </Screen>
+
+      {!isSignUp ? (
+        <EmailSuggestionsModal
+          visible={showEmailSuggestions}
+          entries={loginHistory}
+          query={email}
+          onSelect={handleSelectEmail}
+          onRemove={handleRemoveEmail}
+          onClear={handleClearHistory}
+          onClose={() => setShowEmailSuggestions(false)}
+        />
+      ) : null}
     </KeyboardAvoidingView>
   );
 }

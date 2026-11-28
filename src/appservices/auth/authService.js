@@ -1,4 +1,5 @@
 import { authRepository } from '@/data/repositories/authRepository';
+import { loginHistoryRepository } from '@/data/repositories/loginHistoryRepository';
 import { AppError, getErrorMessage, toAppError } from '@/shared/utils/errors';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +45,15 @@ export const authService = {
     if (error) {
       throw toAppError(error, getErrorMessage('AUTH_ERROR'));
     }
+
+    // Riwayat hanya pelengkap UI: kegagalan penyimpanan tidak boleh
+    // menggagalkan login yang sudah berhasil di backend.
+    try {
+      await loginHistoryRepository.remember(payload.email);
+    } catch {
+      // Diabaikan dengan sengaja.
+    }
+
     return data;
   },
 
@@ -82,6 +92,22 @@ export const authService = {
     }
 
     return data?.user ?? null;
+  },
+
+  async listLoginHistory() {
+    return loginHistoryRepository.list();
+  },
+
+  async removeLoginEmail(email) {
+    const normalized = normalizeEmail(email);
+    if (!normalized) {
+      return loginHistoryRepository.list();
+    }
+    return loginHistoryRepository.remove(normalized);
+  },
+
+  async clearLoginHistory() {
+    return loginHistoryRepository.clear();
   },
 
   subscribe(callback) {
