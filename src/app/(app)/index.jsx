@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '@/modules/auth';
-import { DashboardOverview, useDashboard } from '@/modules/dashboard';
+import { DashboardOverview, getGreeting, useDashboard } from '@/modules/dashboard';
 import { useNotifications } from '@/modules/notifications';
 import { ErrorBanner, Screen } from '@/shared/components';
 import { colors, borderWidth, radius, typography } from '@/shared/theme';
@@ -50,7 +50,7 @@ export default function DashboardScreen() {
           <Text style={styles.greetingName} numberOfLines={1} ellipsizeMode="tail">
             {displayName}
           </Text>
-          <Text style={styles.greeting}>Good evening</Text>
+          <Text style={styles.greeting}>{getGreeting()}</Text>
         </View>
         <NotificationButton count={notifications.length} />
       </View>

@@ -271,6 +271,8 @@ MVP hanya mendukung satu mata uang, yaitu Indonesian Rupiah (IDR). Pengguna tida
 
 Akses ke aplikasi memerlukan akun pengguna yang diautentikasi melalui Supabase Auth (pembuatan akun dan masuk) agar data keuangan terisolasi per pengguna. Autentikasi adalah prasyarat pendukung, bukan fitur produk tersendiri. MVP tidak menyediakan layar penghapusan akun; penghapusan akun hanya berupa perilaku cascade database yang dilakukan di sisi backend.
 
+Nama tampilan pengguna dapat diedit dari Pengaturan dan ditampilkan pada Dashboard. Akun baru atau nama yang dikosongkan menampilkan `User` sampai pengguna mengubahnya. Nama disimpan sebagai `user_metadata.display_name` di Supabase Auth hanya untuk keperluan tampilan; tidak dipakai sebagai identitas unik atau penentu otorisasi.
+
 ## 4. User Interaction Flows
 
 ### 4.1 Create Fund

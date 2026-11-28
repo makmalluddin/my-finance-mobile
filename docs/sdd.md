@@ -664,6 +664,7 @@ Daftar ini menjelaskan tanggung jawab teknis. Nama fungsi, parameter, return typ
 - Setiap data milik pengguna harus memiliki batas kepemilikan yang jelas.
 - Supabase Auth menyediakan identitas pengguna.
 - Masuk dan pengelolaan sesi menggunakan Supabase Auth melalui Data Access Layer (`src/data/supabase`); Presentation Layer tidak mengimpor Supabase Client. MVP tidak menyediakan layar penghapusan akun; penghapusan akun dilakukan di sisi backend.
+- Nama tampilan disimpan di `user_metadata.display_name` melalui `authRepository.updateUser` dan `authService.updateDisplayName`; `AuthProvider` mengekspos `displayName` dengan fallback `User`. Metadata ini hanya untuk tampilan, bukan otorisasi atau identitas unik, sehingga tidak menambah tabel `profiles`, migration, atau RPC baru.
 - PostgreSQL RLS membatasi akses hanya ke data milik pengguna yang sedang terautentikasi.
 - Operasi RPC harus memvalidasi kepemilikan data yang digunakan.
 - Client tidak boleh dipercaya sebagai satu-satunya sumber identitas atau otorisasi.

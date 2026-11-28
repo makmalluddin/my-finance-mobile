@@ -1,7 +1,7 @@
 # Rencana Fase Pengerjaan Proyek
 
 **Proyek:** Personal Finance Tracking (Expo SDK 58 + React Native 0.88.1 + Supabase lokal)
-**Status dokumen:** Disetujui — Fase 6 dan Fase 7A selesai diverifikasi manual dan disetujui; Fase 7B belum dimulai
+**Status dokumen:** Disetujui — Fase 6, Fase 7A, dan Fase 7B selesai diverifikasi manual dan disetujui; Fase 8 opsional belum dimulai
 **Dibuat:** 22 November 2026
 
 > Catatan lokasi: dokumentasi proyek berada di `docs/` di root repository, bukan di
@@ -349,11 +349,60 @@ atau logika finansial.
   tombol back, lima tab rapi, serta dialog Tolak/Konfirmasi masih berfungsi. Matriks UI-001–UI-006
   tersedia di `docs/testing.md` bagian 11.
 
-### Fase 7B — Belum dieksekusi
+### Fase 7B — Adopsi Mockup Figma (Selesai)
 
-Menunggu persetujuan eksplisit. Rencana: detail UI lanjutan, regresi penuh matriks manual,
-perubahan status dokumen menjadi Accepted, dan persiapan EAS development — tanpa build cloud
-sampai diizinkan.
+**Status:** Selesai; verifikasi manual di perangkat dinyatakan aman dan disetujui pengguna
+pada 28 November 2026.
+
+**Sifat perubahan:** UI-only. Tidak menyentuh AppServices, repository, RPC, migration, schema,
+RLS, atau logika finansial.
+
+#### Cakupan
+
+- Adopsi penuh mockup `race-quick-61313935.figma.site` pada sepuluh layar: Dashboard,
+  Transaksi, Pocket, Detail Pocket, Fund, Notifikasi, Pengaturan, Sign In, Sign Up, dan 404.
+- Token tema memakai palet hijau mockup: warna, radius, spacing, dan tipografi. Radius, jarak,
+  font, dan border yang hard-coded dinormalisasi ke token pada komponen bersama dan kartu modul.
+- Komponen bersama dirapikan (`AppButton`, `Card`, `TextField`, `SelectField`, `DateField`,
+  `EmptyState`, `Badge`); kartu dibuat flat dan tinggi field form 45 px.
+- Tab bar 65 px dengan lima tab, pill aktif hijau, dan label 9 px. Notifikasi tetap diakses
+  dari tombol lonceng 44×44 di Dashboard; rute `notifications` tetap navigable tetapi tab bar
+  disembunyikan tanpa memakai `href: null`.
+- Tombol elipsis 44×44 dan modal aksi dipakai pada baris Transaksi dan Item Pocket agar visual
+  mockup tetap terjaga tanpa menghilangkan Ubah/Hapus.
+
+#### Verifikasi
+
+- Gate otomatis saat eksekusi 7B: `npx expo lint` bersih, `npm test` 69/69,
+  `npx supabase test db` 406/406, `npx expo-doctor` 20/20.
+- Smoke Playwright (viewport 390 px): seluruh rute utama render, form Transaksi/Fund/Pocket/Item,
+  dropdown, modal aksi, konfirmasi sign-out, dan dialog OccurrenceConfirmDialog berfungsi;
+  halaman Notifikasi tidak menampilkan tab bar; 0 console error aplikasi.
+- Verifikasi manual di perangkat dinyatakan aman oleh pengguna. Matriks UI-101–UI-112 tersedia
+  di `docs/testing.md` bagian 12.
+
+#### Improvement pasca-adopsi
+
+**Nama pengguna**
+
+- Nama tampilan disimpan di `user_metadata.display_name` melalui `authRepository.updateUser`
+  dan `authService.updateDisplayName`; tidak ada tabel `profiles`, migration, atau RPC baru.
+- `AuthProvider` mengekspos `displayName` dan `updateDisplayName` serta langsung menyinkronkan
+  sesi setelah penyimpanan. Pengaturan menampilkan baris Nama dan tombol “Ubah nama” melalui
+  `ProfileNameDialog`; Dashboard memakai nama yang sama, dengan fallback `User` untuk akun baru
+  atau nama kosong.
+- Validasi: trim spasi, maksimal 50 karakter, dan nama kosong disimpan sebagai `null`.
+- Gate: lint bersih, `npm test` 76/76, smoke web untuk fallback, edit, sinkronisasi Dashboard,
+  persistensi setelah reload, dan kembalinya `User` saat dikosongkan. Matriks NAME-001–NAME-007
+  di `docs/testing.md`.
+
+**Sapaan Dashboard mengikuti jam**
+
+- Teks hard-coded “Good evening” diganti `getGreeting()` di `src/modules/dashboard/greeting.js`:
+  `Good morning` 05.00–11.59, `Good afternoon` 12.00–17.59, dan `Good evening` 18.00–04.59.
+- Sapaan dihitung saat Dashboard dirender dan diperbarui saat layar difokuskan; tidak ada timer.
+- Gate: lint bersih, `npm test` 85/85, dan `npx expo export --platform android` berhasil.
+  Matriks GREET-001–GREET-004 di `docs/testing.md`.
 
 ### Risiko residual
 
@@ -361,6 +410,12 @@ sampai diizinkan.
   berjalan (disetujui apa adanya pada Fase 6).
 - Perangkat fisik bergantung pada IP LAN host di `.env`; `127.0.0.1` hanya untuk laptop.
 - INT-003/INT-004 konkurensi nyata hanya dapat diverifikasi manual dengan dua klien.
+- `npx expo-doctor` saat ini 19/20 karena drift versi dependency yang sudah ada sebelum
+  improvement (`expo` 58.0.26 vs ~58.1.0, `expo-router` 58.0.32 vs ~58.0.33, `jest-expo`
+  58.0.15 vs ~58.0.16). Sesuai keputusan, dependency tidak diubah dalam penutupan Fase 7B.
+- Validasi nama (trim dan batas 50 karakter) hanya di sisi client; `user_metadata` dipakai
+  untuk tampilan, bukan otorisasi, dan nama tidak dijamin unik.
+- Sapaan Dashboard tidak berubah sendiri tanpa render/fokus baru karena sengaja tidak memakai timer.
 - Cloud build, submit, dan EAS Update belum dilakukan.
 
 ### Gate keluar
@@ -398,7 +453,7 @@ Tidak termasuk MVP lokal. Dilaksanakan hanya setelah Fase 7 disetujui.
 ## 10. Urutan gate ringkas
 
 ```text
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 ✅ → Fase 6 ✅ → Fase 7A ✅ → Fase 7B (belum dimulai) → (Fase 8 opsional)
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 4 ✅ → Fase 5 ✅ → Fase 6 ✅ → Fase 7A ✅ → Fase 7B ✅ → (Fase 8 opsional)
 ```
 
 Setiap panah memerlukan persetujuan pengguna sebelum dieksekusi.

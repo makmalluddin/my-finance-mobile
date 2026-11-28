@@ -1,9 +1,9 @@
 # TESTING DOCUMENT
 ## Personal Finance Tracking Application
 
-**Document Version:** 0.3  
-**Document Status:** Draft — ditambah matriks manual Fase 7A (sudah diverifikasi)  
-**Last Updated:** 26 November 2026  
+**Document Version:** 0.4  
+**Document Status:** Accepted — matriks Fase 7A, Fase 7B, nama pengguna, dan sapaan Dashboard terverifikasi  
+**Last Updated:** 28 November 2026  
 **Platform:** Android (MVP)
 
 ---
@@ -323,7 +323,52 @@ lonceng di Dashboard, bukan dari tab.
 | UI-005 | Dialog Notifikasi | Notifikasi pending tersedia; pengguna memilih Tolak atau Konfirmasi | Dialog tetap berfungsi seperti sebelum Fase 7A |
 | UI-006 | Konsistensi visual | Pengguna meninjau seluruh layar setelah perubahan tema | Radius, jarak, dan tipografi mengikuti token; tidak ada warna baru |
 
+# 12. Fase 7B — Adopsi Mockup & Improvement Akun
+
+Skenario berikut menguji hasil Fase 7B (UI-only) dan improvement pasca-adopsi: nama pengguna
+serta sapaan Dashboard yang mengikuti jam perangkat.
+
+## 12.1 Adopsi mockup
+
+| ID | Test Scenario | Input / Condition | Expected Result |
+|---|---|---|---|
+| UI-101 | Dashboard | Pengguna membuka Dashboard | Header, Active Balance, Active Fund, dan grafik Expense tujuh hari sesuai mockup |
+| UI-102 | Transaksi | Pengguna membuka halaman Transaksi | Daftar dan form transaksi mengikuti mockup; tombol aksi tetap tersedia |
+| UI-103 | Pocket | Pengguna membuka daftar Pocket | Kartu Pocket, status, dan ringkasan mengikuti mockup |
+| UI-104 | Detail Pocket | Pengguna membuka Detail Pocket | Daftar item, aksi, dan informasinya mengikuti mockup |
+| UI-105 | Fund | Pengguna membuka halaman Fund | Daftar Active dan Savings/Goal Fund mengikuti mockup |
+| UI-106 | Notifikasi | Pengguna menekan tombol lonceng di Dashboard | Halaman Notifikasi terbuka, tab bar tidak ditampilkan, dan dialog Tolak/Konfirmasi tetap berfungsi |
+| UI-107 | Pengaturan | Pengguna membuka Pengaturan | Kartu Akun, Kategori Sistem, dan Aplikasi mengikuti mockup |
+| UI-108 | Sign In | Pengguna membuka halaman masuk | Form dan tipografi mengikuti mockup |
+| UI-109 | Sign Up | Pengguna membuka halaman daftar | Form dan tipografi mengikuti mockup |
+| UI-110 | Halaman tidak ditemukan | Pengguna membuka rute yang tidak ada | Tampilan 404 mengikuti mockup dan ada jalan kembali |
+| UI-111 | Tab bar dan aksi baris | Pengguna meninjau navigasi dan baris Transaksi/Item Pocket | Lima tab dengan pill aktif hijau dan label kecil; tombol elipsis 44×44 membuka modal Ubah/Hapus |
+| UI-112 | Konsistensi komponen | Pengguna meninjau seluruh layar | Palet hijau, kartu flat, field form 45 px, dan token spasi/tipografi dipakai konsisten |
+
+## 12.2 Nama pengguna
+
+| ID | Test Scenario | Input / Condition | Expected Result |
+|---|---|---|---|
+| NAME-001 | Akun tanpa nama | Akun baru atau `display_name` kosong | Pengaturan dan Dashboard menampilkan `User` |
+| NAME-002 | Mengubah nama | Nama valid dimasukkan lewat tombol “Ubah nama” lalu disimpan | Nama tersimpan dan langsung tampil di Pengaturan serta Dashboard tanpa reload |
+| NAME-003 | Persistensi setelah restart | Aplikasi ditutup lalu dibuka kembali | Nama yang tersimpan tetap tampil |
+| NAME-004 | Persistensi setelah masuk ulang | Pengguna sign out lalu sign in | Nama yang tersimpan tetap tampil |
+| NAME-005 | Mengosongkan nama | Nama dihapus lalu disimpan | Pengaturan dan Dashboard kembali menampilkan `User` |
+| NAME-006 | Validasi nama | Nama lebih dari 50 karakter atau hanya spasi | Spasi dipangkas, nama panjang ditolak dengan pesan validasi |
+| NAME-007 | Isolasi antar akun | Nama diubah pada satu akun, lalu akun lain dibuka | Nama akun lain tidak berubah |
+
+## 12.3 Sapaan Dashboard
+
+| ID | Test Scenario | Input / Condition | Expected Result |
+|---|---|---|---|
+| GREET-001 | Sapaan pagi | Jam perangkat 05.00–11.59 | Dashboard menampilkan `Good morning` |
+| GREET-002 | Sapaan siang | Jam perangkat 12.00–17.59 | Dashboard menampilkan `Good afternoon` |
+| GREET-003 | Sapaan malam | Jam perangkat 18.00–04.59 | Dashboard menampilkan `Good evening` |
+| GREET-004 | Pembaruan sapaan | Jam berganti lalu pengguna kembali ke Dashboard | Sapaan mengikuti jam terbaru setelah layar difokuskan |
+
+GREET-001–GREET-003 diverifikasi dengan unit test batas jam; GREET-004 diverifikasi manual.
+
 ---
 
-**Document Status:** Draft untuk direview; UI-001–UI-006 sudah diverifikasi manual dan dinyatakan lulus.  
+**Document Status:** Accepted; UI-001–UI-006, UI-101–UI-112, NAME-001–NAME-007, dan GREET-001–GREET-004 sudah diverifikasi manual dan/atau otomatis.  
 Seluruh skenario di atas merupakan acuan pengujian berdasarkan keputusan produk dan desain teknis yang telah didokumentasikan. Skenario yang memerlukan aturan yang belum diputuskan harus menunggu keputusan pada dokumen sumber sebelum dijadikan kriteria lulus/gagal final.
