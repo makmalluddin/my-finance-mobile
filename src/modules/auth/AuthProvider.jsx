@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { authService } from '@/appservices/auth/authService';
 import { LoadingState } from '@/shared/components';
+import { getDisplayName } from './displayName';
 
 const AuthContext = createContext(null);
 
@@ -66,17 +67,39 @@ export function AuthProvider({ children }) {
     setSession(null);
   }, []);
 
+  const updateDisplayName = useCallback(async (name) => {
+    const updatedUser = await authService.updateDisplayName(name);
+
+    setSession((current) =>
+      current && updatedUser ? { ...current, user: updatedUser } : current
+    );
+
+    return updatedUser;
+  }, []);
+
+  const displayName = useMemo(() => getDisplayName(session?.user), [session]);
+
   const value = useMemo(
     () => ({
       session,
       user: session?.user ?? null,
+      displayName,
       isAuthenticated: Boolean(session?.user),
       isReady,
       signIn,
       signUp,
       signOut,
+      updateDisplayName,
     }),
-    [session, isReady, signIn, signUp, signOut]
+    [
+      session,
+      displayName,
+      isReady,
+      signIn,
+      signUp,
+      signOut,
+      updateDisplayName,
+    ]
   );
 
   if (!isReady) {

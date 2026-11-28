@@ -15,6 +15,8 @@ export const authRepository = {
 
   signOut: () => supabase.auth.signOut(),
 
+  updateUser: (attributes) => supabase.auth.updateUser(attributes),
+
   onAuthStateChange: (callback) => supabase.auth.onAuthStateChange(callback),
 };
 

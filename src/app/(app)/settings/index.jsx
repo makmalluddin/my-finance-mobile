@@ -2,8 +2,8 @@ import Constants from 'expo-constants';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Text, View } from 'react-native';
-import { useAuth } from '@/modules/auth';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ProfileNameDialog, useAuth } from '@/modules/auth';
 import { CategorySummary, useCategories } from '@/modules/categories';
 import {
   AppButton,
@@ -17,11 +17,14 @@ import { colors, radius, spacing, typography } from '@/shared/theme';
 import { getDeviceTimezone } from '@/shared/utils/date';
 import { toAppError } from '@/shared/utils/errors';
 
-function InfoRow({ label, value, last = false }) {
+function InfoRow({ label, value, action, last = false }) {
   return (
     <View style={[styles.row, !last && styles.rowDivider]}>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={styles.rowValue}>{value}</Text>
+      <View style={styles.rowRight}>
+        <Text style={styles.rowValue}>{value}</Text>
+        {action ? <View style={styles.rowAction}>{action}</View> : null}
+      </View>
     </View>
   );
 }
@@ -38,7 +41,7 @@ function SectionTitle({ icon, children }) {
 }
 
 export default function SettingsScreen() {
-  const { user, signOut } = useAuth();
+  const { user, displayName, signOut, updateDisplayName } = useAuth();
   const {
     categories,
     loading: categoriesLoading,
@@ -58,6 +61,10 @@ export default function SettingsScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState(null);
+  const [nameDialogVisible, setNameDialogVisible] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState(null);
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -73,12 +80,46 @@ export default function SettingsScreen() {
     }
   };
 
+  const openNameDialog = () => {
+    setNameDraft(user?.user_metadata?.display_name ?? '');
+    setNameError(null);
+    setNameDialogVisible(true);
+  };
+
+  const handleSaveName = async (name) => {
+    setSavingName(true);
+    setNameError(null);
+
+    try {
+      await updateDisplayName(name);
+      setNameDialogVisible(false);
+    } catch (saveError) {
+      setNameError(toAppError(saveError).message);
+    } finally {
+      setSavingName(false);
+    }
+  };
+
   return (
     <Screen>
       <PageHeader title="Pengaturan" />
 
       <Card style={styles.card}>
         <SectionTitle icon="person-outline">Akun</SectionTitle>
+        <InfoRow
+          label="Nama"
+          value={displayName}
+          action={
+            <Pressable
+              onPress={openNameDialog}
+              accessibilityRole="button"
+              accessibilityLabel="Ubah nama"
+              style={({ pressed }) => [styles.editButton, pressed && styles.editButtonPressed]}
+            >
+              <Ionicons name="pencil-outline" size={18} color={colors.primary} />
+            </Pressable>
+          }
+        />
         <InfoRow label="Email" value={user?.email ?? '-'} last />
         <ErrorBanner message={error} onDismiss={() => setError(null)} />
         <AppButton
@@ -111,6 +152,16 @@ export default function SettingsScreen() {
         loading={signingOut}
         onConfirm={handleSignOut}
         onCancel={() => setConfirmVisible(false)}
+      />
+
+      <ProfileNameDialog
+        visible={nameDialogVisible}
+        name={nameDraft}
+        onChangeName={setNameDraft}
+        loading={savingName}
+        error={nameError}
+        onSave={handleSaveName}
+        onClose={() => !savingName && setNameDialogVisible(false)}
       />
     </Screen>
   );
@@ -154,12 +205,31 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginRight: spacing.md,
   },
-  rowValue: {
+  rowRight: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  rowValue: {
+    flexShrink: 1,
     ...typography.bodyStrong,
     fontWeight: '700',
     color: colors.text,
     textAlign: 'right',
+  },
+  rowAction: {
+    marginLeft: spacing.xs,
+  },
+  editButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editButtonPressed: {
+    backgroundColor: colors.primarySoft,
   },
   signOut: {
     minWidth: 98,

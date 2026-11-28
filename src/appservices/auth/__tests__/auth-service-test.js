@@ -9,6 +9,7 @@ jest.mock('@/data/repositories/authRepository', () => ({
     signIn: jest.fn(),
     signUp: jest.fn(),
     signOut: jest.fn(),
+    updateUser: jest.fn(),
     onAuthStateChange: jest.fn(),
   },
 }));
@@ -82,6 +83,50 @@ describe('authService', () => {
     dispose();
 
     expect(unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  test('updateDisplayName memangkas spasi dan mengirim metadata', async () => {
+    const user = { id: 'user-1', user_metadata: { display_name: 'Nadia' } };
+    authRepository.updateUser.mockResolvedValue({ data: { user }, error: null });
+
+    const result = await authService.updateDisplayName('  Nadia  ');
+
+    expect(authRepository.updateUser).toHaveBeenCalledWith({
+      data: { display_name: 'Nadia' },
+    });
+    expect(result).toEqual(user);
+  });
+
+  test('updateDisplayName mengosongkan metadata untuk fallback User', async () => {
+    authRepository.updateUser.mockResolvedValue({
+      data: { user: { id: 'user-1' } },
+      error: null,
+    });
+
+    await authService.updateDisplayName('   ');
+
+    expect(authRepository.updateUser).toHaveBeenCalledWith({
+      data: { display_name: null },
+    });
+  });
+
+  test('updateDisplayName menolak nama lebih dari 50 karakter', async () => {
+    await expect(authService.updateDisplayName('a'.repeat(51))).rejects.toMatchObject({
+      code: 'VALIDATION_ERROR',
+      message: 'Nama pengguna maksimal 50 karakter.',
+    });
+    expect(authRepository.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('updateDisplayName menerjemahkan error backend dengan aman', async () => {
+    authRepository.updateUser.mockResolvedValue({
+      data: null,
+      error: { message: 'Failed to fetch' },
+    });
+
+    await expect(authService.updateDisplayName('Nadia')).rejects.toMatchObject({
+      code: 'NETWORK_ERROR',
+    });
   });
 });
 

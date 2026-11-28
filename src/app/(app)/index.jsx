@@ -2,6 +2,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { useAuth } from '@/modules/auth';
 import { DashboardOverview, useDashboard } from '@/modules/dashboard';
 import { useNotifications } from '@/modules/notifications';
 import { ErrorBanner, Screen } from '@/shared/components';
@@ -28,6 +29,7 @@ function NotificationButton({ count }) {
 }
 
 export default function DashboardScreen() {
+  const { displayName } = useAuth();
   const { dashboard, loading, error, refresh, clearError } = useDashboard();
   const { notifications } = useNotifications();
 
@@ -45,7 +47,9 @@ export default function DashboardScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.greetingName}>Nadia</Text>
+          <Text style={styles.greetingName} numberOfLines={1} ellipsizeMode="tail">
+            {displayName}
+          </Text>
           <Text style={styles.greeting}>Good evening</Text>
         </View>
         <NotificationButton count={notifications.length} />
